@@ -5,13 +5,28 @@ import type { TabConfig } from '../networking/types/layoutConfig';
  */
 export const APP_NAME = 'Tapza Care';
 
-/**
- * TEMP: static tabs shaped like config.tabs. Used until the config lands, then kept as the fallback when a
- * config has no usable tabs.
- */
+/** Fallback tabs, used when a config has no usable tabs (see resolveTabs). */
 export const DEFAULT_TABS: TabConfig[] = [
   { id: 'tab-home', label: 'Home', icon: 'home', screen: 'home' },
   { id: 'tab-bookings', label: 'Bookings', icon: 'calendar', screen: 'bookings' },
   { id: 'tab-prescriptions', label: 'Medicines', icon: 'pill', screen: 'prescriptions' },
   { id: 'tab-profile', label: 'Profile', icon: 'user', screen: 'profile' },
 ];
+
+/** AsyncStorage keys. Bump the version suffix when a persisted shape changes incompatibly. */
+export const STORAGE_KEYS = {
+  config: 'tapza.config.v1',
+  mockControls: 'tapza.mockControls.v1',
+  doseLog: 'tapza.doseLog.v1',
+} as const;
+
+/** TanStack Query keys. */
+export const QUERY_KEYS = {
+  config: (variant: string, customConfigJson: string | null) =>
+    ['config', variant, customConfigJson] as const,
+  doctors: ['doctors'] as const,
+  slots: (doctorId: string, date: string) => ['slots', doctorId, date] as const,
+  slotsForDoctor: (doctorId: string) => ['slots', doctorId] as const,
+  bookings: ['bookings'] as const,
+  prescriptions: ['prescriptions'] as const,
+};

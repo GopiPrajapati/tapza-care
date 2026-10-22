@@ -117,3 +117,29 @@ config validation tests.
 - Added `__tests__/mockServer.test.ts` (deterministic slots, booking window, 201 then 409, failure switch,
   config variant) on top of the requested config validation tests.
 **Rejected:** a generic `CareApi` interface (the endpoints are fixed by the PDF; the client mirrors them).
+
+## Phase 5 — State, data hooks and theme
+**Prompt:** persisted Zustand stores (config variant + last good config, mock controls, dose log), TanStack Query
+hooks with an optimistic booking mutation, `useConfig` with fresh → cached → bundled fallback, `buildTheme()` with
+contrast-checked derived colours, ThemeProvider, tabs from `config.tabs`, a temporary Normal/Diwali toggle,
+a theme contrast test.
+**Decisions:**
+- No `useBookingStore`: bookings are server state, so TanStack Query's cache (with optimistic updates) is the
+  single source of truth. A second store would need syncing and could disagree with the cache.
+- Stores sync into the mock server via `subscribe`, so the admin switches change what the "server" returns.
+- The app renders nothing until persisted stores hydrate, so the first request already uses the saved variant
+  (verified: a cold start after choosing Diwali opens straight into Diwali, no flash of the normal theme).
+- `useConfig` always returns a config. Switching variant keeps the old layout until the new one arrives
+  (`keepPreviousData`). The persisted last-good config is re-validated on read.
+- Bundled fallback layout lives in `src/assets/config/defaultConfig.json` (a shipped asset, separate from mock
+  fixtures, so the data rule holds).
+- On a 409 the booking is rolled back but the slot stays marked taken; on other errors the slot is restored.
+  Mutations never auto-retry (no double booking).
+- Contrast: `ensureContrast()` nudges text colours towards black/white until WCAG AA 4.5:1 against both
+  background and surface; tested on both configs plus a deliberately low-contrast and a dark config.
+- `theme.ts` stays `.ts` (agreed structure) by using `createElement` for the provider.
+- Added `@babel/plugin-transform-export-namespace-from` (pinned 7.29.7, already installed via preset-env):
+  zod 4 uses `export * as ns`, which made Metro fail to bundle the app. Jest did not catch it; found by running
+  the app. Exception to "no new dependency without asking", flagged to the user.
+- RN 0.88 removed `StatusBar.backgroundColor` (Android is edge-to-edge); only the bar style is themed.
+**Rejected:** a Redux/Zustand booking store (duplicates server state).

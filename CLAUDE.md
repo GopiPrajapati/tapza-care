@@ -14,6 +14,8 @@ designed loading/empty states), clean structure, strict TS, no hard-coded colour
 - TanStack Query (server data, optimistic mutations), Zustand + AsyncStorage (app state, persisted).
 - zod (config validation), react-native-linear-gradient, lottie-react-native (success).
 - Jest + React Native Testing Library.
+- Babel: `@babel/plugin-transform-export-namespace-from` (needed for zod 4 in Metro) + worklets plugin (last).
+- After changing `babel.config.js`, restart Metro with `--reset-cache`.
 
 ## Folder structure (mandatory) [ours]
 Use `.ts`/`.tsx` everywhere.
