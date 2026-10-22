@@ -19,14 +19,10 @@ export interface SectionBackgroundProps {
 }
 
 /**
- * Paints a section's config background (colour, gradient or image) and gives the text inside a readable tone.
- * Image backgrounds fall back to a gradient of the theme's brand colours when the image key is not bundled.
+ * Colours a section's background resolves to (every gradient stop) and the readable text tone on it.
+ * Image backgrounds fall back to the brand gradient when the image key is not bundled.
  */
-function SectionBackground({
-  background,
-  children,
-  style,
-}: SectionBackgroundProps) {
+export function useSectionPaint(background: SectionBackgroundConfig) {
   const { colors } = useTheme();
   const image =
     background.kind === 'image' ? getImage(background.value) : undefined;
@@ -43,6 +39,17 @@ function SectionBackground({
   }, [background, image, colors]);
 
   const tone = useMemo(() => toneOn(stops, colors), [stops, colors]);
+  return { image, stops, tone };
+}
+
+/** Paints a section's config background (colour, gradient or image) and gives the text inside a readable tone. */
+function SectionBackground({
+  background,
+  children,
+  style,
+}: SectionBackgroundProps) {
+  const { colors } = useTheme();
+  const { image, stops, tone } = useSectionPaint(background);
   const content = <ToneProvider tone={tone}>{children}</ToneProvider>;
 
   if (image) {
