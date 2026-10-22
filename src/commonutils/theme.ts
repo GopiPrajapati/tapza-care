@@ -1,7 +1,8 @@
-import { createContext, createElement, useContext, type ReactNode } from 'react';
-import type { StatusBarStyle, ViewStyle } from 'react-native';
+import { createContext, createElement, useContext, useMemo, type ReactNode } from 'react';
+import { StyleSheet, type StatusBarStyle, type ViewStyle } from 'react-native';
 
 import type { ThemeConfig } from '../networking/types/layoutConfig';
+import { MIN_TAP_TARGET } from './dimensions';
 import { typography, type TypographyScale } from './typography';
 
 /**
@@ -118,6 +119,35 @@ export const radii = {
   pill: 999,
 } as const;
 
+/** Fixed component sizes, so components never hard-code dimensions. */
+export const sizes = {
+  minTouch: MIN_TAP_TARGET,
+  control: 48,
+  controlLarge: 56,
+  iconSm: 16,
+  iconMd: 20,
+  iconLg: 24,
+  iconXl: 32,
+  avatarSm: 40,
+  avatarMd: 56,
+  avatarLg: 72,
+  illustration: 160,
+  hairline: StyleSheet.hairlineWidth,
+  border: 1,
+  handleWidth: 40,
+  /** Space kept free above the tab bar for floating UI (toasts, floating bar). */
+  tabBarClearance: 64,
+} as const;
+
+/** Durations (ms) shared by animations. */
+export const motion = {
+  pressIn: 90,
+  fast: 160,
+  normal: 240,
+  slow: 400,
+  shimmer: 900,
+} as const;
+
 export interface ThemeColors {
   // From config (text colours adjusted for contrast if needed)
   primary: string;
@@ -145,6 +175,9 @@ export interface ThemeColors {
   onDanger: string;
   dangerSurface: string;
   overlay: string;
+  /** Dark fill for floating bars and toasts (Zepto's "Unlock free delivery" bar). */
+  inverseSurface: string;
+  onInverse: string;
   skeleton: string;
   skeletonHighlight: string;
 }
@@ -153,6 +186,8 @@ export interface Theme {
   colors: ThemeColors;
   spacing: typeof spacing;
   radii: typeof radii;
+  sizes: typeof sizes;
+  motion: typeof motion;
   typography: TypographyScale;
   elevation: Record<'none' | 'card' | 'raised', ViewStyle>;
   statusBarStyle: StatusBarStyle;
@@ -196,6 +231,8 @@ export function buildTheme(config: ThemeConfig): Theme {
     onDanger: textOnFill(danger),
     dangerSurface: mix(surface, danger, 0.1),
     overlay: withAlpha(textPrimary, 0.45),
+    inverseSurface: textPrimary,
+    onInverse: surface,
     skeleton: mix(surface, textPrimary, 0.08),
     skeletonHighlight: mix(surface, textPrimary, 0.03),
   };
@@ -212,6 +249,8 @@ export function buildTheme(config: ThemeConfig): Theme {
     colors,
     spacing,
     radii,
+    sizes,
+    motion,
     typography,
     elevation: {
       none: {},
@@ -238,4 +277,16 @@ export function useTheme(): Theme {
     throw new Error('useTheme must be used inside ThemeProvider');
   }
   return theme;
+}
+
+/**
+ * Memoised StyleSheet built from the theme. Pass a module-level factory so it is created once per theme:
+ *   const createStyles = (t: Theme) => ({ box: { padding: t.spacing.lg } });
+ *   const styles = useThemedStyles(createStyles);
+ */
+export function useThemedStyles<T extends Parameters<typeof StyleSheet.create>[0]>(
+  factory: (theme: Theme) => T,
+): Readonly<T> {
+  const theme = useTheme();
+  return useMemo(() => StyleSheet.create(factory(theme)), [theme, factory]);
 }

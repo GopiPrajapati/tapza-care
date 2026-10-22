@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import { buildTheme, ThemeProvider } from '../commonutils/theme';
+import { ToastProvider } from '../components/Toast';
 import { useConfig } from '../hooks/useConfig';
 import { useStoresHydrated } from '../store/hydration';
 import { createQueryClient } from './queryClient';
@@ -22,13 +23,14 @@ function ConfigThemeProvider({ children }: AppProvidersProps) {
     <ThemeProvider theme={theme}>
       {/* Android draws edge-to-edge, so only the icon style is set. */}
       <StatusBar barStyle={theme.statusBarStyle} animated />
-      {children}
+      <ToastProvider>{children}</ToastProvider>
     </ThemeProvider>
   );
 }
 
 /**
- * App-wide providers. BottomSheetModalProvider is added with the bottom sheet component.
+ * App-wide providers. BottomSheetModalProvider lives inside the NavigationContainer (RootNavigator) so sheet
+ * content can use navigation.
  * Nothing renders until persisted stores load, so the first request uses the saved config variant.
  */
 function AppProviders({ children }: AppProvidersProps) {

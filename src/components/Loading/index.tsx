@@ -1,22 +1,39 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
+
+import { useTheme, useThemedStyles, type Theme } from '../../commonutils/theme';
+import AppText from '../AppText';
 
 export interface LoadingProps {
-  /** Read by screen readers. */
-  accessibilityLabel?: string;
+  /** Shown under the spinner and read by screen readers. */
+  label?: string;
 }
 
-/** Generic spinner. Lists use shape-matched skeletons instead. */
-function Loading({ accessibilityLabel = 'Loading' }: LoadingProps) {
+/** Generic spinner for actions. Lists and pages use shape-matched skeletons instead. */
+function Loading({ label = 'Loading' }: LoadingProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
   return (
-    <View style={styles.center} accessibilityLabel={accessibilityLabel}>
-      <ActivityIndicator />
+    <View
+      style={styles.center}
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={label}
+    >
+      <ActivityIndicator color={colors.primaryText} size="large" />
+      <AppText color="textSecondary">{label}</AppText>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+const createStyles = ({ spacing }: Theme) => ({
+  center: {
+    flex: 1,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: spacing.md,
+    padding: spacing.xl,
+  },
 });
 
 export default Loading;

@@ -143,3 +143,29 @@ a theme contrast test.
   the app. Exception to "no new dependency without asking", flagged to the user.
 - RN 0.88 removed `StatusBar.backgroundColor` (Android is edge-to-edge); only the bar style is themed.
 **Rejected:** a Redux/Zustand booking store (duplicates server state).
+
+## Phase 6 — Shared components
+**Prompt:** shared UI components reading `useTheme()` only (no hard-coded colours/spacing/sizes), Zepto visual
+language but calmer for older users, accessibility labels on every touchable, SVG empty-state illustrations,
+a temporary dev-only gallery on AdminSettings.
+**Built:** AppText, Icon (config icon names → lucide, unknown → fallback), PressableScale, Button, Card, Input,
+SearchBar (editable or tap-to-open, right pill slot), Header (round back), SectionHeader (SVG dashed rule,
+See all), Chip, Badge, PriceText, Avatar (image → initials), Skeleton (Group/Box/Circle/Text), Loading,
+EmptyState (+ Illustration), ErrorState, StaleConfigBanner, Toast (provider + `useToast`), FloatingBar,
+StickyActionBar, BottomSheet, ListRow.
+**Decisions:**
+- Theme gained `sizes` (touch target 44, control heights, icons, avatars) and `motion` (durations) so components
+  hard-code no dimensions; plus `inverseSurface`/`onInverse` for the dark floating bar and toast.
+- `useThemedStyles(factory)` memoises a StyleSheet per theme; factories are module-level.
+- `Card` and `PressableScale` make `accessibilityLabel` required by type when pressable.
+- Skeletons share one pulse per `SkeletonGroup` (one animation per screen, not per block); reduced motion stops it.
+- Section header dash is drawn with SVG: single-side dashed borders render solid on iOS.
+- `formatInr` does Indian grouping (₹1,20,000) itself instead of relying on Intl in Hermes. Tested.
+- `BottomSheetModalProvider` sits inside the NavigationContainer so sheet content can navigate; Toast sits at the
+  app root above the tab bar.
+- Tab icons now reuse the shared Icon map.
+- Verified on iOS in both themes: all components, sheet open + swipe-to-close, toast with Undo, theme switch.
+**Known issue (temp gallery only):** a background-coloured strip shows under StickyActionBar on the
+native-stack screen; not a double safe-area inset (fixed that, strip remains). Investigate in Phase 10 where the
+bar is used for real. Toast overlaps a StickyActionBar; add a bottom offset option then.
+**Rejected:** a gradient-sweep shimmer (heavier; opacity pulse reads as loading and is cheaper on mid-range Android).
