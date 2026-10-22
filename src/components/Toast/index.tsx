@@ -114,7 +114,14 @@ function ToastView({
       pointerEvents="box-none"
       style={[
         styles.overlay,
-        { bottom: insets.bottom + sizes.tabBarClearance + spacing.sm },
+        {
+          // Clear both the tab bar and a stack screen's taller sticky booking bar.
+          bottom:
+            insets.bottom +
+            sizes.tabBarClearance +
+            sizes.controlLarge +
+            spacing.lg,
+        },
       ]}
     >
       <Animated.View

@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
+  BottomSheetScrollView,
   BottomSheetView,
   type BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
@@ -20,6 +21,8 @@ export interface BottomSheetProps {
   /** e.g. ['50%', '90%']. Without snap points the sheet sizes to its content. */
   snapPoints?: Array<string | number>;
   onDismiss?: () => void;
+  /** Uses the sheet-aware scroll view so long content remains draggable. */
+  scrollable?: boolean;
 }
 
 /**
@@ -32,6 +35,7 @@ function BottomSheet({
   title,
   snapPoints,
   onDismiss,
+  scrollable = false,
 }: BottomSheetProps) {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -61,19 +65,35 @@ function BottomSheet({
       handleIndicatorStyle={styles.handle}
       accessibilityLabel={title}
     >
-      <BottomSheetView
-        style={[
-          styles.content,
-          { paddingBottom: insets.bottom + styles.content.paddingTop },
-        ]}
-      >
-        {title ? (
-          <AppText variant="title" accessibilityRole="header">
-            {title}
-          </AppText>
-        ) : null}
-        {children}
-      </BottomSheetView>
+      {scrollable ? (
+        <BottomSheetScrollView
+          contentContainerStyle={[
+            styles.content,
+            { paddingBottom: insets.bottom + styles.content.paddingTop },
+          ]}
+        >
+          {title ? (
+            <AppText variant="title" accessibilityRole="header">
+              {title}
+            </AppText>
+          ) : null}
+          {children}
+        </BottomSheetScrollView>
+      ) : (
+        <BottomSheetView
+          style={[
+            styles.content,
+            { paddingBottom: insets.bottom + styles.content.paddingTop },
+          ]}
+        >
+          {title ? (
+            <AppText variant="title" accessibilityRole="header">
+              {title}
+            </AppText>
+          ) : null}
+          {children}
+        </BottomSheetView>
+      )}
     </BottomSheetModal>
   );
 }
