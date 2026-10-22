@@ -289,3 +289,17 @@ with upcoming/past, loading, empty, and retry states. Add booking-state tests; v
 `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (build + launch). On iPhone 17 Pro Max with
 `failure=booking409` and `latency=3000`, confirmed pending success UI followed by rollback to the same date,
 sheet reopened, unavailable slot disabled, and exact conflict toast. Mock controls were restored to defaults.
+
+## Phase 12 — Prescriptions list and today's adherence
+**Prompt:** Implement the Prescriptions tab with today's adherence summary and progress ring, prescription cards
+showing doctor, clinic, issued date, medicine count and Active/Completed status, plus loading, empty and retry states.
+**Decisions:**
+- The screen reads prescription data through `usePrescriptions` and the persisted dose log through
+  `useDoseLogStore`; it does not import fixture data. Today's total includes only medicines whose course is active
+  on the clinic-local date, and each scheduled timing counts as one dose.
+- Course status checks the longest medicine duration against `issuedAt`, while an active course remains Active.
+  The list sorts newest issue dates first and opens the typed PrescriptionDetails route on card press.
+- The summary ring uses the already installed `react-native-svg`, and all screen styling uses theme tokens.
+  No new dependencies were added. PrescriptionDetails remains for Phase 13.
+**Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (9 suites, 96 tests), and
+`npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
