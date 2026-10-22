@@ -1,13 +1,9 @@
-/**
- * @format
- */
-
 import React from 'react';
-import ReactTestRenderer from 'react-test-renderer';
+import { render, screen } from '@testing-library/react-native';
+
 import App from '../App';
 
-test('renders correctly', async () => {
-  await ReactTestRenderer.act(() => {
-    ReactTestRenderer.create(<App />);
-  });
+test('renders the Home placeholder', async () => {
+  await render(<App />);
+  expect(screen.getByText('Home')).toBeTruthy();
 });
