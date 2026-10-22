@@ -187,3 +187,9 @@ Detox/Maestro e2e.
 - Never claim a check passed without running it. If something was skipped, say so.
 - Append each phase prompt and anything rejected to `AI_LOG.md`.
 - Ask before scaffolding anything new or adding a dependency not listed in Stack.
+
+## Continuing-project preferences [user]
+- Preserve the current approved Figma-inspired color combination and visual direction. Do not recolor or redesign it unless the user explicitly asks. The assignment itself supplied no Figma file; follow the design already established in the app and the user's examples.
+- Keep the app feeling like Zepto/Blinkit: fast, polished, vertically banded home content, clear hierarchy, and responsive interactions, while remaining calm and trustworthy for clinic patients.
+- Make appropriate visual/content behavior runtime-configurable where the existing architecture supports it (especially theme colors, festival banner/greeting, section order, and section items). Admin/config changes should take effect without shipping a new app build. Use the mock config/backend and local runtime controls; no real backend is required.
+- Continue one feature phase at a time on a dedicated `feat/<feature-name>` branch. The user handles Git commands: provide the branch/commit/push/merge commands at the end of each phase, following the workflow shown in `docs/PROGRESS.md`; never execute Git mutations.

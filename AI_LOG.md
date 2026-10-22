@@ -248,3 +248,23 @@ Consult chip (pre-selected specialty) and the Home search bar (focused search).
 **Verified on iOS:** opened from the search bar with focus, typed "telugu paed" → 2 doctors, added Gynaecology
 filter → "No doctors match" + Clear filters → back to 10, Book → DoctorDetails(doc-1).
 **Not verified:** the 3s latency skeleton (covered in Phase 14 once the mock controls UI exists).
+
+## Phase 10 — Doctor details and appointment selection
+**Prompt:** Doctor summary (including optional selected service), animated 7-day date strip, gesture-driven slot
+sheet with availability/error/empty states, persisted selection while the screen remains mounted, Zepto-style
+sticky action bar, fix the sticky bar safe-area strip and toast overlap. Confirm is intentionally a no-op.
+**Decisions:**
+- Used the existing doctor and slot repositories/query hooks. The booking window queries all 7 dates so the
+  empty-day action can jump to the next day that actually has an available slot.
+- Added an optional scrollable mode to the shared BottomSheet wrapper, using Gorhom's coordinated scroll view;
+  the date and slot selection live in DoctorDetailsScreen state, so dismissing/reopening the sheet and switching
+  tabs preserves the choice. Picking a different date clears the chosen slot and reopens the sheet.
+- Service name and price come from the matching `service_grid` item in active config. Otherwise the doctor fee is
+  used. Doctor clinic name and area are split from the existing fixture's clinic string.
+- Stack screen omits bottom SafeAreaView padding because StickyActionBar already owns the bottom inset; this
+  removes the exposed background strip. Toast now clears the tab-bar and sticky-action-bar height.
+- Unavailable slots use disabled themed Chips and cannot be pressed. The selected state is animated with
+  Reanimated and respects Reduce Motion.
+**Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (8 suites, 94 tests), and
+`npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched successfully).
+**Rejected:** confirmation/navigation and booking mutation remain out of this phase; Phase 11 owns them.

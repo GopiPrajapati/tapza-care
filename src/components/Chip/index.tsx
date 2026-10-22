@@ -1,4 +1,5 @@
 import React from 'react';
+import type { StyleProp, ViewStyle } from 'react-native';
 
 import {
   SurfaceTone,
@@ -14,14 +15,27 @@ export interface ChipProps {
   label: string;
   onPress: () => void;
   selected?: boolean;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
   /** Config icon name. */
   icon?: string;
 }
 
 /** Pill-shaped filter or category chip. Selected chips use the brand colour. */
-function Chip({ label, onPress, selected = false, icon }: ChipProps) {
+function Chip({
+  label,
+  onPress,
+  selected = false,
+  disabled = false,
+  style,
+  icon,
+}: ChipProps) {
   const styles = useThemedStyles(createStyles);
-  const foreground = selected ? 'onPrimary' : 'textPrimary';
+  const foreground = disabled
+    ? 'textSecondary'
+    : selected
+    ? 'onPrimary'
+    : 'textPrimary';
 
   return (
     <SurfaceTone>
@@ -29,8 +43,14 @@ function Chip({ label, onPress, selected = false, icon }: ChipProps) {
         accessibilityRole="button"
         accessibilityLabel={label}
         accessibilityState={{ selected }}
+        disabled={disabled}
         onPress={onPress}
-        style={[styles.chip, selected && styles.selected]}
+        style={[
+          styles.chip,
+          selected && styles.selected,
+          disabled && styles.disabled,
+          style,
+        ]}
       >
         {icon ? (
           <Icon name={icon} color={selected ? 'onPrimary' : 'primaryText'} />
@@ -60,6 +80,7 @@ const createStyles = ({ colors, spacing, radii, sizes }: Theme) => ({
     backgroundColor: colors.surface,
   },
   selected: { backgroundColor: colors.primary, borderColor: colors.primary },
+  disabled: { backgroundColor: colors.muted, opacity: 0.7 },
 });
 
 export default Chip;
