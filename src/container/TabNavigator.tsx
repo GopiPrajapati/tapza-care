@@ -1,16 +1,10 @@
 import React, { useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {
-  CalendarDays,
-  Circle,
-  House,
-  type LucideIcon,
-  Pill,
-  User,
-} from 'lucide-react-native';
+import type { LucideIcon } from 'lucide-react-native';
 
 import { DEFAULT_TABS } from '../commonutils/constants';
 import { useTheme } from '../commonutils/theme';
+import { getIcon } from '../components/Icon';
 import { useConfig } from '../hooks/useConfig';
 import type { TabConfig, TabScreen } from '../networking/types/layoutConfig';
 import HomeScreen from '../screens/HomeScreen';
@@ -34,15 +28,6 @@ const SCREEN_MAP: Record<TabScreen, { route: keyof TabParamList; component: TabC
   prescriptions: { route: Routes.Prescriptions, component: PrescriptionsScreen },
   profile: { route: Routes.Profile, component: ProfileScreen },
 };
-
-/** config.tabs[].icon → icon component. Unknown names use FALLBACK_ICON. */
-const ICON_MAP: Record<string, LucideIcon> = {
-  home: House,
-  calendar: CalendarDays,
-  pill: Pill,
-  user: User,
-};
-const FALLBACK_ICON = Circle;
 
 export interface ResolvedTab {
   id: string;
@@ -76,7 +61,7 @@ export function resolveTabs(tabs: TabConfig[]): ResolvedTab[] {
       continue;
     }
     seen.add(tab.screen);
-    const Icon = ICON_MAP[tab.icon] ?? FALLBACK_ICON;
+    const Icon = getIcon(tab.icon);
     resolved.push({
       id: tab.id,
       label: tab.label,

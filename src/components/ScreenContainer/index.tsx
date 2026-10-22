@@ -16,7 +16,8 @@ function ScreenContainer({ children, edges, style }: ScreenContainerProps) {
   return (
     <SafeAreaView
       edges={edges}
-      style={[styles.container, { backgroundColor: colors.background }, style]}>
+      style={[styles.container, { backgroundColor: colors.background }, style]}
+    >
       {children}
     </SafeAreaView>
   );

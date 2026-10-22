@@ -1,6 +1,27 @@
 /**
- * Small pure helpers (dates, ids). ₹ formatting is added with the UI components.
+ * Small pure helpers: dates, ₹ formatting, names.
  */
+
+/** Indian grouping: 1200 → "₹1,200", 120000 → "₹1,20,000". Avoids relying on Intl support in the JS engine. */
+export function formatInr(amount: number): string {
+  const rounded = Math.round(amount);
+  const digits = String(Math.abs(rounded));
+  const lastThree = digits.slice(-3);
+  const rest = digits.slice(0, -3);
+  const grouped = rest ? `${rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',')},${lastThree}` : lastThree;
+  return `${rounded < 0 ? '-' : ''}₹${grouped}`;
+}
+
+/** "Dr. Lakshmi Prasanna" → "LP". Titles are ignored. */
+export function getInitials(name: string): string {
+  const words = name
+    .replace(/^(dr|mr|mrs|ms)\.?\s+/i, '')
+    .split(/\s+/)
+    .filter(Boolean);
+  const first = words[0]?.[0] ?? '';
+  const last = words.length > 1 ? words[words.length - 1][0] : '';
+  return `${first}${last}`.toUpperCase();
+}
 
 /** The clinic works in India Standard Time (UTC+05:30). Dates in the API are clinic-local. */
 export const CLINIC_UTC_OFFSET_MINUTES = 330;

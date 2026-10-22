@@ -85,3 +85,21 @@ describe('buildTheme', () => {
     expect(buildTheme(dark).statusBarStyle).toBe('light-content');
   });
 });
+
+describe('formatting helpers', () => {
+  const { formatInr, getInitials } = jest.requireActual('../src/commonutils/helpers');
+
+  it('formats rupees with Indian digit grouping', () => {
+    expect(formatInr(0)).toBe('₹0');
+    expect(formatInr(600)).toBe('₹600');
+    expect(formatInr(1200)).toBe('₹1,200');
+    expect(formatInr(120000)).toBe('₹1,20,000');
+    expect(formatInr(12345678)).toBe('₹1,23,45,678');
+  });
+
+  it('builds initials without titles', () => {
+    expect(getInitials('Dr. Lakshmi Prasanna')).toBe('LP');
+    expect(getInitials('Dr. Ramesh Reddy')).toBe('RR');
+    expect(getInitials('Gopi')).toBe('G');
+  });
+});

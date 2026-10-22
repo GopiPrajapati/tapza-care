@@ -1,27 +1,70 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
+import { ChevronLeft } from 'lucide-react-native';
 
-import Button from '../Button';
+import { useTheme, useThemedStyles, type Theme } from '../../commonutils/theme';
+import AppText from '../AppText';
+import PressableScale from '../PressableScale';
 
 export interface HeaderProps {
   title: string;
-  /** Shows a back button when provided. */
+  subtitle?: string;
+  /** Shows Zepto's round back button. */
   onBackPress?: () => void;
+  right?: React.ReactNode;
 }
 
-function Header({ title, onBackPress }: HeaderProps) {
+/** In-screen header for screens that hide the native header (e.g. ones with coloured bands). */
+function Header({ title, subtitle, onBackPress, right }: HeaderProps) {
+  const { colors, sizes } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={styles.row}>
       {onBackPress ? (
-        <Button label="Back" accessibilityLabel="Go back" onPress={onBackPress} />
+        <PressableScale
+          accessibilityLabel="Go back"
+          onPress={onBackPress}
+          style={styles.back}
+        >
+          <ChevronLeft size={sizes.iconLg} color={colors.textPrimary} />
+        </PressableScale>
       ) : null}
-      <Text accessibilityRole="header">{title}</Text>
+      <View style={styles.titles}>
+        <AppText variant="heading" accessibilityRole="header" numberOfLines={1}>
+          {title}
+        </AppText>
+        {subtitle ? (
+          <AppText variant="caption" color="textSecondary" numberOfLines={1}>
+            {subtitle}
+          </AppText>
+        ) : null}
+      </View>
+      {right}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center' },
+const createStyles = ({ colors, spacing, radii, sizes, elevation }: Theme) => ({
+  row: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+  },
+  back: {
+    width: sizes.minTouch,
+    height: sizes.minTouch,
+    borderRadius: radii.pill,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: colors.surface,
+    borderWidth: sizes.border,
+    borderColor: colors.border,
+    ...elevation.card,
+  },
+  titles: { flex: 1 },
 });
 
 export default Header;
