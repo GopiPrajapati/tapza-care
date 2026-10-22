@@ -31,7 +31,15 @@ export type TabParamList = {
 /** Root native stack. Params carry IDs only, never domain objects. */
 export type RootStackParamList = {
   [Routes.MainTabs]: NavigatorScreenParams<TabParamList> | undefined;
-  [Routes.DoctorList]: { specialty?: string; serviceId?: string } | undefined;
+  [Routes.DoctorList]:
+    | {
+        /** Pre-selects this specialty filter. */
+        specialty?: string;
+        serviceId?: string;
+        /** Opens with the search field focused (from the Home search bar). */
+        focusSearch?: boolean;
+      }
+    | undefined;
   [Routes.DoctorDetails]: { doctorId: string; serviceId?: string };
   [Routes.ServiceList]: undefined;
   [Routes.BookingSuccess]: { bookingId: string };

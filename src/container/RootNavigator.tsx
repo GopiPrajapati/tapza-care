@@ -55,7 +55,8 @@ function RootNavigator() {
           <Stack.Screen
             name={Routes.DoctorList}
             component={DoctorListScreen}
-            options={{ title: 'Doctors' }}
+            // In-screen header: back button, search and filters.
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name={Routes.DoctorDetails}

@@ -112,7 +112,8 @@
           "label": "Consult",
           "icon": "stethoscope",
           "action": {
-            "type": "open_doctors"
+            "type": "open_doctors",
+            "specialty": "General Physician"
           }
         },
         {

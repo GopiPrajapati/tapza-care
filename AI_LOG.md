@@ -228,3 +228,23 @@ reverses it.
 for now, per the user's disk/RAM limits). `getItemLayout` not used: section heights depend on config and font
 scale, so fixed heights would be wrong.
 **Rejected:** a JS `onScroll` listener for the header (would run per frame on the JS thread).
+
+## Phase 9 — Doctor list
+**Prompt:** DoctorListScreen with debounced search (name/specialty/language), specialty chips, doctor cards with
+fee and next slot, skeleton/empty/no-results/error states, opened from carousel "See all", Book quick action,
+Consult chip (pre-selected specialty) and the Home search bar (focused search).
+**Decisions:**
+- Search is word-prefix based: each query word must start a word in the doctor's name, specialty, languages or
+  clinic. A plain substring match was tried first and "paed" matched "Orthopaedics" (caught on the simulator).
+  Multi-word queries narrow ("telugu paed" → Telugu-speaking paediatricians). Tested.
+- `filterDoctors` is a pure function next to the screen, so it is unit-tested without React.
+- Next-slot badge extracted into a shared `NextSlotBadge` component (carousel and list both use it).
+- `DoctorList` route gained `focusSearch`; the Home search bar passes it, the Book pill does not. The Consult chip
+  in all configs now pre-selects "General Physician".
+- The screen uses an in-screen header (back + title + search + chips) instead of the native header.
+- Specialty chips come from the data; a pre-selected specialty with no doctors still shows as a chip so the user
+  can clear it.
+- Debounce 250ms (`useDebouncedValue`); search field has autocorrect and autocapitalise off.
+**Verified on iOS:** opened from the search bar with focus, typed "telugu paed" → 2 doctors, added Gynaecology
+filter → "No doctors match" + Clear filters → back to 10, Book → DoctorDetails(doc-1).
+**Not verified:** the 3s latency skeleton (covered in Phase 14 once the mock controls UI exists).

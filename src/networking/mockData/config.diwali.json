@@ -87,7 +87,7 @@
       "title": "Festive care",
       "background": { "kind": "color", "value": "#FFFFFF" },
       "items": [
-        { "id": "cat-consult", "label": "Consult", "icon": "stethoscope", "action": { "type": "open_doctors" } },
+        { "id": "cat-consult", "label": "Consult", "icon": "stethoscope", "action": { "type": "open_doctors", "specialty": "General Physician" } },
         { "id": "cat-sugar", "label": "Sugar check", "icon": "droplet", "action": { "type": "open_doctors", "specialty": "Diabetology" } },
         { "id": "cat-skin", "label": "Burns & skin", "icon": "flame", "action": { "type": "open_doctors", "specialty": "Dermatology" } },
         { "id": "cat-lab", "label": "Lab tests", "icon": "flask-conical", "action": { "type": "coming_soon" } },
