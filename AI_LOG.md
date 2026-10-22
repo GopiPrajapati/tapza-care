@@ -304,6 +304,24 @@ showing doctor, clinic, issued date, medicine count and Active/Completed status,
 **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (9 suites, 96 tests), and
 `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
 
+## Phase 14 — Profile and Admin settings
+**Prompt:** Build the Zepto-style Profile and Developer settings screens; expose runtime config and mock network
+controls, local reset actions, a zod-backed live JSON editor, and a discreet long-press Home ETA entry point. Remove
+the temporary component gallery and phase test buttons.
+**Decisions:**
+- Profile uses the fictional patient fixture and mock family/clinic summaries. Only bookings and prescriptions
+  tiles navigate to implemented features; other rows and Family show a Coming soon toast without fake flows.
+- Admin settings bind directly to persisted config/mock-control stores. Config selection triggers the existing
+  query/re-theme path; latency and failures map to the mock server's supported values.
+- The live editor starts from the active validated config. Envelope and dropped-section Zod issues are displayed
+  with paths; Apply stays disabled until the current draft validates without dropped sections, then selects Custom.
+- Added a mock-server helper to reset bookings/reserved slots without clearing the selected network controls.
+  Dose reset uses the persisted dose-log store, and config clearing removes the last-good fallback then refetches.
+- The ETA affordance opens Admin settings on long press. README documents the hidden entry point. Removed the
+  temporary ComponentGallery and the leftover TEMP route button from ServiceList.
+**Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (10 suites, 98 tests), and
+`npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
+
 ## Phase 13 — Prescription details and dose tracking
 **Prompt:** Show prescription metadata and Day X of N, grouped medicine schedule with suggested times, mark-taken
 controls with animation/haptic/Undo toast, persisted per-day dose state, historical-course read-only behavior,

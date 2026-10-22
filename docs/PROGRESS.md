@@ -1,7 +1,7 @@
-# Tapza Care — progress handoff (Phases 0–13)
+# Tapza Care — progress handoff (Phases 0–14)
 
 Use this file to continue in a new session. Give the new session this file plus `CLAUDE.md`,
-`AI_LOG.md` and `docs/phase-prompts.md`, then paste the next phase prompt (Phase 14).
+`AI_LOG.md` and `docs/phase-prompts.md`, then paste the next phase prompt (Phase 15).
 
 ## User context and design preferences
 - This is a React Native + strict TypeScript take-home assignment. Follow `CLAUDE.md` and the assignment PDF: mock backend/data only (no production backend), config-driven home/theme/tabs/sections, booking and prescriptions/reminders, resilience states, accessibility, and meaningful tests.
@@ -27,9 +27,10 @@ Use this file to continue in a new session. Give the new session this file plus 
 | 11 | Booking confirm, success, My Bookings | ✅ done, **commit/merge if not yet** | feat/booking-flow |
 | 12 | Prescriptions list + today's adherence | ✅ done, **commit/merge if not yet** | feat/prescriptions-list |
 | 13 | Prescription details + dose tracking | ✅ done, **commit/merge if not yet** | feat/prescription-details |
-| 14–16 | Profile/admin, polish, bonus | ⏳ next | see docs/phase-prompts.md |
+| 14 | Profile, Admin settings, live config editor | ✅ done, **commit/merge if not yet** | feat/profile-admin |
+| 15–16 | Polish and bonus | ⏳ next | see docs/phase-prompts.md |
 
-Last checks (Phase 13): `npx tsc --noEmit` ✅, `npm run lint` ✅, `npm test -- --runInBand` 98/98 ✅,
+Last checks (Phase 14): `npx tsc --noEmit` ✅, `npm run lint` ✅, `npm test -- --runInBand` 98/98 ✅,
 iOS simulator build + launch ✅ (iPhone 17 Pro Max). Android not run yet (planned in Phase 15).
 
 ## Working rules (keep these)
@@ -139,4 +140,4 @@ __tests__/                     App, nativeMocks, tabs, configValidation, mockSer
    git push origin main
    ```
 2. For Phase 10, use the `feat/booking-flow` branch (create it if needed; the screen/UI work is complete).
-3. Continue with Phase 14 from `docs/phase-prompts.md` after committing/merging Phase 13.
+3. Continue with Phase 15 from `docs/phase-prompts.md` after committing/merging Phase 14.

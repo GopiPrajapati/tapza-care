@@ -79,18 +79,29 @@ export function resetMockServer(options: { now?: () => number } = {}): void {
   state = createState(options.now);
 }
 
+/** Clears created bookings and their reserved slots while preserving the active mock controls. */
+export function resetMockBookings(): void {
+  state.bookings = [];
+  state.bookedSlotIds.clear();
+  state.nextBookingNumber = 1;
+}
+
 // ---------- Fixtures ----------
 
-interface PrescriptionFixture extends Omit<Prescription, 'issuedAt' | 'medicines'> {
+interface PrescriptionFixture
+  extends Omit<Prescription, 'issuedAt' | 'medicines'> {
   /** Kept relative so the data never goes stale. */
   issuedDaysAgo: number;
-  medicines: Array<Omit<Prescription['medicines'][number], 'timing'> & { timing: string[] }>;
+  medicines: Array<
+    Omit<Prescription['medicines'][number], 'timing'> & { timing: string[] }
+  >;
 }
 
 const doctors: Doctor[] = doctorsFixture;
 
 const DOSE_TIMINGS: readonly string[] = ['morning', 'afternoon', 'night'];
-const isDoseTiming = (value: string): value is DoseTiming => DOSE_TIMINGS.includes(value);
+const isDoseTiming = (value: string): value is DoseTiming =>
+  DOSE_TIMINGS.includes(value);
 
 function buildPrescriptions(nowMs: number): Prescription[] {
   return (prescriptionsFixture as PrescriptionFixture[]).map(
@@ -115,10 +126,15 @@ export interface MockResponse {
 }
 
 const delay = (ms: number) =>
-  ms > 0 ? new Promise<void>(resolve => setTimeout(resolve, ms)) : Promise.resolve();
+  ms > 0
+    ? new Promise<void>(resolve => setTimeout(resolve, ms))
+    : Promise.resolve();
 
 /** Minimal query parser: React Native's URLSearchParams does not implement get(). */
-function splitPath(path: string): { pathname: string; query: Record<string, string> } {
+function splitPath(path: string): {
+  pathname: string;
+  query: Record<string, string>;
+} {
   const [pathname, search = ''] = path.split('?');
   const query: Record<string, string> = {};
   for (const pair of search.split('&')) {
@@ -134,7 +150,8 @@ function splitPath(path: string): { pathname: string; query: Record<string, stri
 function isCreateBookingRequest(body: unknown): body is CreateBookingRequest {
   const candidate = body as Partial<CreateBookingRequest> | null;
   return (
-    typeof candidate?.doctorId === 'string' && typeof candidate?.slotId === 'string'
+    typeof candidate?.doctorId === 'string' &&
+    typeof candidate?.slotId === 'string'
   );
 }
 
@@ -223,7 +240,10 @@ function route(method: HttpMethod, path: string, body: unknown): MockResponse {
     case 'GET /bookings':
       return { status: 200, data: empty ? [] : [...state.bookings] };
     case 'GET /prescriptions':
-      return { status: 200, data: empty ? [] : buildPrescriptions(state.now()) };
+      return {
+        status: 200,
+        data: empty ? [] : buildPrescriptions(state.now()),
+      };
     default:
       throw new ApiError(404, `No route for ${method} ${pathname}`);
   }
