@@ -1,9 +1,10 @@
-# Tapza Care — progress handoff (Phases 0–14)
+# Tapza Care — progress handoff (Phases 0–15)
 
 Use this file to continue in a new session. Give the new session this file plus `CLAUDE.md`,
-`AI_LOG.md` and `docs/phase-prompts.md`, then paste the next phase prompt (Phase 15).
+`AI_LOG.md` and `docs/phase-prompts.md`, then paste the next phase prompt (Phase 16, if continuing).
 
 ## User context and design preferences
+
 - This is a React Native + strict TypeScript take-home assignment. Follow `CLAUDE.md` and the assignment PDF: mock backend/data only (no production backend), config-driven home/theme/tabs/sections, booking and prescriptions/reminders, resilience states, accessibility, and meaningful tests.
 - Preserve the currently approved Figma-inspired color combination and visual direction. The assignment did not include a Figma file; a design direction was developed from the user's examples and already implemented. Do not change its colors unless explicitly requested.
 - Aim for a Zepto/Blinkit-like fast commerce feel, especially in the home screen's distinct scrolling bands and responsive interactions, adapted to feel calm and trustworthy for clinic patients.
@@ -11,30 +12,34 @@ Use this file to continue in a new session. Give the new session this file plus 
 - Work one feature phase at a time on a dedicated `feat/<feature-name>` branch. Do not run Git mutations; the user performs branch/commit/push/merge commands. At phase end, give the concrete commands following the workflow below and report only checks actually run.
 
 ## Status
-| Phase | What | State | Branch |
-|---|---|---|---|
-| 0 / 0.5 | CLAUDE.md, AI_LOG.md, README skeleton, folder rules | ✅ merged | main |
-| 1 | Pinned dependencies, native setup, Jest mocks | ✅ merged | main |
-| 2 | Folder structure, placeholder screens | ✅ merged | main |
-| 3 | Typed navigation, tabs from config | ✅ merged | main |
-| 4 | Types, zod config validation, mock server, repositories | ✅ merged | main |
-| 5 | Zustand stores, TanStack Query hooks, theme from config | ✅ merged | feat/theme-and-data-hooks |
-| 6 | Shared themed components + dev gallery | ✅ merged | feat/ui-components |
-| 7 | Config-driven Home sections (bands) | ✅ merged | feat/home-sections |
-| 8 | Home motion (collapsing header, parallax, back-to-top) | ✅ merged | feat/home-animations |
-| 9 | Doctor list (search, filters, cards, states) | ✅ done, **commit/merge if not yet** | feat/doctor-list |
-| 10 | Doctor details + date/slot selection UI | ✅ done, **commit/merge if not yet** | feat/booking-flow |
-| 11 | Booking confirm, success, My Bookings | ✅ done, **commit/merge if not yet** | feat/booking-flow |
-| 12 | Prescriptions list + today's adherence | ✅ done, **commit/merge if not yet** | feat/prescriptions-list |
-| 13 | Prescription details + dose tracking | ✅ done, **commit/merge if not yet** | feat/prescription-details |
-| 14 | Profile, Admin settings, live config editor | ✅ done, **commit/merge if not yet** | feat/profile-admin |
-| 15–16 | Polish and bonus | ⏳ next | see docs/phase-prompts.md |
 
-Last checks (Phase 14): `npx tsc --noEmit` ✅, `npm run lint` ✅, `npm test -- --runInBand` 98/98 ✅,
-iOS simulator build + launch ✅ (iPhone 17 Pro Max). Android not run yet (planned in Phase 15).
+| Phase   | What                                                    | State                                | Branch                    |
+| ------- | ------------------------------------------------------- | ------------------------------------ | ------------------------- |
+| 0 / 0.5 | CLAUDE.md, AI_LOG.md, README skeleton, folder rules     | ✅ merged                            | main                      |
+| 1       | Pinned dependencies, native setup, Jest mocks           | ✅ merged                            | main                      |
+| 2       | Folder structure, placeholder screens                   | ✅ merged                            | main                      |
+| 3       | Typed navigation, tabs from config                      | ✅ merged                            | main                      |
+| 4       | Types, zod config validation, mock server, repositories | ✅ merged                            | main                      |
+| 5       | Zustand stores, TanStack Query hooks, theme from config | ✅ merged                            | feat/theme-and-data-hooks |
+| 6       | Shared themed components + dev gallery                  | ✅ merged                            | feat/ui-components        |
+| 7       | Config-driven Home sections (bands)                     | ✅ merged                            | feat/home-sections        |
+| 8       | Home motion (collapsing header, parallax, back-to-top)  | ✅ merged                            | feat/home-animations      |
+| 9       | Doctor list (search, filters, cards, states)            | ✅ done, **commit/merge if not yet** | feat/doctor-list          |
+| 10      | Doctor details + date/slot selection UI                 | ✅ done, **commit/merge if not yet** | feat/booking-flow         |
+| 11      | Booking confirm, success, My Bookings                   | ✅ done, **commit/merge if not yet** | feat/booking-flow         |
+| 12      | Prescriptions list + today's adherence                  | ✅ done, **commit/merge if not yet** | feat/prescriptions-list   |
+| 13      | Prescription details + dose tracking                    | ✅ done, **commit/merge if not yet** | feat/prescription-details |
+| 14      | Profile, Admin settings, live config editor             | ✅ done, **commit/merge if not yet** | feat/profile-admin        |
+| 15      | Polish, resilience checks, submission docs              | ✅ iOS-side work done; Android deferred by user | submission-prep |
+| 16      | Bonus                                                   | ⏳ pending                           | see docs/phase-prompts.md |
+
+Last checks (Phase 15): `npx tsc --noEmit` ✅, `npm run lint` ✅, `npm test` 102/102 ✅,
+iOS simulator build + launch ✅ (iPhone 17 Pro Max). Android is deferred because the user reported insufficient
+local storage. The release build was interrupted before completion; there is no APK yet.
 
 ## Working rules (keep these)
-- iOS simulator only until ~80–90% done (Mac has limited disk/RAM). Keep Android code correct.
+
+- iOS simulator only until ~80–90% done (Mac has limited disk/RAM). Ask before Android build/device work when storage is constrained.
 - Claude never runs git. Each phase ends with: branch name, commit message, merge commands.
 - One phase per prompt, then stop. Report files changed, checks actually run, git commands.
 - Exact versions in package.json (no `^`/`~`). No new dependency without asking.
@@ -44,6 +49,7 @@ iOS simulator build + launch ✅ (iPhone 17 Pro Max). Android not run yet (plann
 - Run Prettier only on files you changed (a repo-wide run reformats ~30 old files).
 
 ## Environment
+
 - Node 22.13 (`nvm use 22.13.0`, `.nvmrc`). RN 0.88, New Architecture, React 19.3, TypeScript 6.
 - iOS: `pod install` (global CocoaPods; `bundle exec` fails on system Ruby 2.6). Simulator: iPhone 17 Pro Max.
 - Android: SDK Platform 37 installed; not built yet.
@@ -53,6 +59,7 @@ iOS simulator build + launch ✅ (iPhone 17 Pro Max). Android not run yet (plann
 - Jest uses `react-native-reanimated/jest/resolver` + `setUpTests()`; lucide mapped to its CJS build.
 
 ## Architecture (where things live)
+
 ```
 src/
   App.tsx                      providers + RootNavigator
@@ -86,18 +93,18 @@ src/
                                SectionBackground, SectionBlock, HeroArt), components/ (StickyHomeHeader,
                                TopBand, EntryAnimated, BackToTop, NextDoseBar, HomeSkeleton, HomeScrollContext)
     DoctorListScreen/          index, filterDoctors.ts, components/ (DoctorRow, DoctorListSkeleton)
-    DoctorDetailsScreen/       PLACEHOLDER (Phase 10)
-    BookingSuccessScreen/      PLACEHOLDER modal (Phase 11)
-    MyBookingsScreen/          PLACEHOLDER (Phase 11)
-    PrescriptionsScreen/       PLACEHOLDER (Phase 12)
-    PrescriptionDetailsScreen/ PLACEHOLDER (Phase 13)
-    ProfileScreen/             PLACEHOLDER + TEMP Normal/Diwali toggle (Phase 14)
-    AdminSettingsScreen/       TEMP component gallery in __DEV__ (Phase 14 replaces it)
-    ServiceListScreen/         PLACEHOLDER (only if time)
-__tests__/                     App, nativeMocks, tabs, configValidation, mockServer, theme, sections, doctorList
+    DoctorDetailsScreen/       date and slot selection, booking action
+    BookingSuccessScreen/      optimistic booking confirmation modal
+    MyBookingsScreen/          upcoming and past bookings
+    PrescriptionsScreen/       adherence summary and prescriptions
+    PrescriptionDetailsScreen/ schedule and dose tracking
+    ProfileScreen/             profile links and coming-soon rows
+    AdminSettingsScreen/       live config and mock network controls
+__tests__/                     app, navigation, config, theme, screen hooks, booking and dose state
 ```
 
 ## Already available for the next phases
+
 - **Booking (Phase 10–11):** `useSlots(doctorId, date)`, `useCreateBooking()` (optimistic insert as `pending`,
   confirmed on success, rollback on error, `isSlotTaken` for 409, slot kept taken on 409, no auto-retry),
   `useMyBookings()`. `BottomSheet` wrapper (ref `.present()/.dismiss()`), `StickyActionBar`, `Toast`.
@@ -111,15 +118,15 @@ __tests__/                     App, nativeMocks, tabs, configValidation, mockSer
   `parseConfig()` for the live editor, `useDoseLogStore.reset()`. Mock server has `resetMockServer()`.
 
 ## Known issues / TODO carried forward
-- Phase 10: StickyActionBar shows a background-coloured strip under it on stack screens (seen in the gallery);
-  Toast overlaps StickyActionBar → add a bottom offset.
-- Phase 14: remove every `TEMP(Phase 3)` / `TEMP(Phase 5)` button, the Profile theme toggle and the dev gallery;
-  add the long-press Home ETA → AdminSettings entry.
+
 - Bookings live only in mock-server memory (lost on app restart) — acceptable; mention in README.
-- Not yet verified: 3s-latency skeletons, FPS profiling, Android build/back button, release APK.
+- iOS simulator was built/launched, but largest OS font scale and full interactive screen-reader navigation still need manual verification.
+- Android navigation, hardware back, Home motion, booking flow, release build, and APK install remain unverified/deferred due to storage constraints.
+- Resilience query-state tests cover latency, config failure/fallback, all-fail, and empty responses; visual state review is tracked in `docs/CHECKLIST.md`.
 - `getItemLayout` not used on Home (heights depend on config + font scale) — documented.
 
 ## Key decisions (short)
+
 - Gesture Handler 2.x (not 3) for bottom-sheet compatibility.
 - No Redux / no booking store: TanStack Query cache is the single source of server state.
 - Two-level config validation: bad envelope rejects config; bad/unknown sections are dropped individually.
@@ -130,6 +137,7 @@ __tests__/                     App, nativeMocks, tabs, configValidation, mockSer
 - Doctor search is word-prefix ("paed" ≠ "Orthopaedics").
 
 ## Next step
+
 1. If Phase 9 is not committed yet:
    ```
    git switch -c feat/doctor-list
@@ -140,4 +148,4 @@ __tests__/                     App, nativeMocks, tabs, configValidation, mockSer
    git push origin main
    ```
 2. For Phase 10, use the `feat/booking-flow` branch (create it if needed; the screen/UI work is complete).
-3. Continue with Phase 15 from `docs/phase-prompts.md` after committing/merging Phase 14.
+3. Phase 15 work is complete locally. Before Android validation, confirm storage is available; then follow the remaining Android items in `docs/CHECKLIST.md`.
