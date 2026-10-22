@@ -28,6 +28,8 @@ export const STORAGE_KEYS = {
   config: 'tapza.config.v1',
   mockControls: 'tapza.mockControls.v1',
   doseLog: 'tapza.doseLog.v1',
+  language: 'tapza.language.v1',
+  appearance: 'tapza.appearance.v1',
 } as const;
 
 /** TanStack Query keys. */

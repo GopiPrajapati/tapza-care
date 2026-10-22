@@ -62,13 +62,14 @@ src/
   components/      Reusable accessible, themed UI and state components
   container/       Providers, typed navigation, tabs, and query client
   hooks/           Screen-facing query and app-state hooks
+  i18n/            Bundled English, Hindi, and Telugu UI translations
   networking/
     api/           Request boundary and endpoint/error definitions
     repositories/  Typed data access; screens do not call the mock server directly
     types/         Domain types and Zod config validation
     mockData/      Fixtures, slot generation, and in-process mock server
   screens/         Feature screens; each owns its screen-specific UI
-  store/           Persisted config, mock controls, and dose log
+  store/           Persisted config, mock controls, language, and dose log
 __tests__/         Jest tests for domain logic, data behavior, and key interactions
 docs/              Phase prompts, progress handoff, and submission checklist
 ```
@@ -80,6 +81,8 @@ docs/              Phase prompts, progress handoff, and submission checklist
 - **Booking:** `useCreateBooking` inserts a pending booking and marks the slot unavailable in the query cache immediately. The mock POST reconciles it to confirmed, or rolls it back on failure. A 409 keeps the slot unavailable and returns the patient to choose another time.
 - **Dose tracking:** a persisted Zustand store keys each mark by clinic-local date, prescription, medicine, and timing. The prescription summary and Home next-dose bar read the same state.
 - **Motion and accessibility:** Reanimated handles Home scroll motion and selection feedback. Theme colors are adjusted for contrast, text uses OS font scaling, and controls use accessible labels and minimum touch sizes.
+- **Languages:** i18next uses bundled English, Hindi, and Telugu resources, so translations work without a network. Choose a language in Profile; the selection is stored on device and restored at startup. Known copy from the bundled Home configs is translated, while custom config text stays as authored.
+- **Appearance:** choose System, Light, or Dark in Profile. The preference is stored on device. System follows the OS; Dark uses the active config's optional, Zod-validated `theme.dark` palette when present; Light preserves the original palette. Configured Home bands adapt to the selected palette.
 
 ## Mock backend and developer controls
 
@@ -90,9 +93,9 @@ There is also a discreet shortcut: long-press the **Clinic visit in 20 min** Hom
 ## What was cut
 
 - Production authentication, backend services, and payment processing: the assignment specifies mock data and no backend.
-- Language switching, notification preferences, family management, and saved-clinic flows: the UI shows Coming soon rather than suggesting those actions work.
+- Notification preferences, family management, and saved-clinic flows: the UI shows Coming soon rather than suggesting those actions work.
 - A full Service List, prescription refill flow, offline booking queue, and Android release APK: outside the implemented core flow or deferred to final device/storage availability.
-- Hindi/Telugu localization and local notifications: not completed in the available time.
+- Local notifications: not implemented; they were not part of the selected Phase 16 item.
 
 ## Time spent
 

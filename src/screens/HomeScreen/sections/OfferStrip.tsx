@@ -15,6 +15,7 @@ import type {
   OfferItem,
   OfferStripSection,
 } from '../../../networking/types/configSchema';
+import { useTranslateContent } from '../../../i18n/useTranslateContent';
 
 /** Thin coloured band with one or more short messages. */
 function OfferStrip({ section }: { section: OfferStripSection }) {
@@ -29,6 +30,7 @@ function OfferStrip({ section }: { section: OfferStripSection }) {
 }
 
 function OfferRow({ item }: { item: OfferItem }) {
+  const translate = useTranslateContent();
   const styles = useThemedStyles(createStyles);
   const { sizes, colors } = useTheme();
   const tone = useTone();
@@ -41,7 +43,7 @@ function OfferRow({ item }: { item: OfferItem }) {
         color={tone?.foreground ?? colors.textPrimary}
       />
       <AppText variant="bodyStrong" style={styles.message}>
-        {item.message}
+        {translate(item.message)}
       </AppText>
     </>
   );
@@ -49,7 +51,7 @@ function OfferRow({ item }: { item: OfferItem }) {
   if (item.action && item.action.type !== 'none') {
     return (
       <PressableScale
-        accessibilityLabel={item.message}
+        accessibilityLabel={translate(item.message)}
         onPress={() => onAction(item.action)}
         style={styles.row}
       >
@@ -58,7 +60,11 @@ function OfferRow({ item }: { item: OfferItem }) {
     );
   }
   return (
-    <View style={styles.row} accessible accessibilityLabel={item.message}>
+    <View
+      style={styles.row}
+      accessible
+      accessibilityLabel={translate(item.message)}
+    >
       {content}
     </View>
   );

@@ -1,4 +1,4 @@
-# Tapza Care — progress handoff (Phases 0–15)
+# Tapza Care — progress handoff (Phases 0–16c)
 
 Use this file to continue in a new session. Give the new session this file plus `CLAUDE.md`,
 `AI_LOG.md` and `docs/phase-prompts.md`, then paste the next phase prompt (Phase 16, if continuing).
@@ -31,7 +31,9 @@ Use this file to continue in a new session. Give the new session this file plus 
 | 13      | Prescription details + dose tracking                    | ✅ done, **commit/merge if not yet** | feat/prescription-details |
 | 14      | Profile, Admin settings, live config editor             | ✅ done, **commit/merge if not yet** | feat/profile-admin        |
 | 15      | Polish, resilience checks, submission docs              | ✅ iOS-side work done; Android deferred by user | submission-prep |
-| 16      | Bonus                                                   | ⏳ pending                           | see docs/phase-prompts.md |
+| 16a     | English, Hindi, Telugu localization and Profile switch  | ✅ done locally                      | feat/phase16-i18n |
+| 16c     | Config-driven dark appearance                           | ✅ done locally                      | feat/phase16-dark-mode |
+| 16b, 16d–g | Reminders, deep links, transition, offline queue, Maestro | ⏳ choose one per prompt | see Phase 16 prompt |
 
 Last checks (Phase 15): `npx tsc --noEmit` ✅, `npm run lint` ✅, `npm test` 102/102 ✅,
 iOS simulator build + launch ✅ (iPhone 17 Pro Max). Android is deferred because the user reported insufficient
@@ -148,4 +150,4 @@ __tests__/                     app, navigation, config, theme, screen hooks, boo
    git push origin main
    ```
 2. For Phase 10, use the `feat/booking-flow` branch (create it if needed; the screen/UI work is complete).
-3. Phase 15 work is complete locally. Before Android validation, confirm storage is available; then follow the remaining Android items in `docs/CHECKLIST.md`.
+3. Phase 16a and 16c are complete locally. Continue one bonus at a time; choose from Phase 16b, 16d–g after reviewing each change.

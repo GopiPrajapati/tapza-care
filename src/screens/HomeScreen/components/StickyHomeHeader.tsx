@@ -29,6 +29,7 @@ import type { SectionBackground } from '../../../networking/types/layoutConfig';
 import { useSectionPaint } from '../sections/SectionBackground';
 import HomeHeader from './HomeHeader';
 import { useHomeScroll } from './HomeScrollContext';
+import { useTranslation } from 'react-i18next';
 
 export interface StickyHomeHeaderProps {
   /** Background of the top band the header starts on. */
@@ -47,6 +48,7 @@ export interface StickyHomeHeaderProps {
  */
 function StickyHomeHeader({ background, onMeasured }: StickyHomeHeaderProps) {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useAppNavigation();
@@ -177,7 +179,7 @@ function StickyHomeHeader({ background, onMeasured }: StickyHomeHeaderProps) {
         </ToneProvider>
         <View style={styles.search}>
           <SearchBar
-            placeholder='Search "Paediatrics"'
+            placeholder={t('searchPaediatrics')}
             onPress={() =>
               navigation.navigate(Routes.DoctorList, { focusSearch: true })
             }
@@ -196,15 +198,16 @@ function StickyHomeHeader({ background, onMeasured }: StickyHomeHeaderProps) {
 function BookPill({ onPress }: { onPress: () => void }) {
   const styles = useThemedStyles(createStyles);
   const { colors, sizes } = useTheme();
+  const { t } = useTranslation();
   return (
     <PressableScale
-      accessibilityLabel="Book a visit"
+      accessibilityLabel={t('bookVisit')}
       onPress={onPress}
       style={styles.pill}
     >
       <CalendarPlus size={sizes.iconMd} color={colors.primaryText} />
       <AppText variant="label" color="primaryText">
-        Book
+        {t('book')}
       </AppText>
     </PressableScale>
   );

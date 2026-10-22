@@ -394,3 +394,44 @@ for Android work and asked to defer Android until iOS changes are complete.
   **Verified:** `npx tsc --noEmit` ✅, `npm run lint` ✅, `npm test` ✅ (11 suites, 102 tests), and
   `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` ✅ (build + launch). Android release build:
   incomplete; no APK. Largest-font-scale and interactive screen-reader checks remain manual.
+
+## Phase 16a — Hindi and Telugu localization
+
+**Prompt:** Move UI copy into `src/i18n`, add Hindi (and Telugu if feasible) through i18next, provide a Profile
+language switch, and persist the selected language.
+**Decisions and changes:**
+
+- Added pinned `i18next@26.5.6` and `react-i18next@17.1.3`; their declared peers accept this project's React 19 and
+  TypeScript 6 versions. The translation resources are bundled, so switching languages does not make a request.
+- Added English, Hindi, and Telugu dictionaries for screen copy, accessibility labels, navigation titles, loading,
+  error and empty states, date/time labels, booking/dose feedback, and developer controls. Home copy that comes from
+  the two bundled runtime configs is translated by matching known source strings. Unknown custom config copy remains
+  unchanged so the live editor can still supply custom content.
+- Added a persisted Zustand language store using AsyncStorage and included it in the startup hydration barrier to
+  restore the chosen language before the app renders. Profile presents English, हिन्दी, and తెలుగు options.
+- Localized dates/times and doctor specialties/language names. Doctor search now accepts the displayed Hindi/Telugu
+  specialty and language terms as well as the fixture's English terms.
+- Preserved config-derived theme colors and all other screen styling. No backend or platform-native dependency was
+  added.
+
+  **Verified:** `npx tsc --noEmit` ✅, `npm run lint` ✅, `npm run ios -- --simulator "iPhone 17 Pro Max"` ✅
+  (iOS simulator build and launch; Home was visible in the accessibility tree). Jest was not run for this item.
+  Android remains deferred under the user's storage constraint.
+
+## Phase 16c — Config-driven dark appearance
+
+**Prompt:** Add dark mode driven by an optional `theme.dark` config block.
+**Decisions and changes:**
+
+- Added an optional, fully validated dark palette to the config type and Zod schema. Bundled default, Normal, and
+  Diwali configs each include a dark palette; custom configs may supply their own or omit it.
+- The app follows the operating system color scheme. It uses `theme.dark` when available and retains the current
+  light palette when the config has no dark block. Status bar styling follows the active palette.
+- Profile exposes persisted System / Light / Dark preferences, so patients can keep the original light appearance
+  even when their device is set to dark mode.
+- Configured Home color and gradient bands are shaded toward the dark background in dark appearance. Existing
+  light palettes and colors remain unchanged.
+- No dependencies were added. Android verification remains deferred under the user's storage constraint.
+
+  **Verified:** `npx tsc --noEmit` ✅, `npm run lint` ✅, and
+  `npm run ios -- --simulator "iPhone 17 Pro Max"` ✅ (simulator build and launch). Jest was not run.

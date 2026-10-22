@@ -39,17 +39,19 @@ import {
   useIsDoseTaken,
   type DoseRef,
 } from '../../store/doseLogStore';
+import { useTranslation } from 'react-i18next';
 
-const GROUPS: { timing: DoseTiming; label: string; icon: typeof Sun }[] = [
-  { timing: 'morning', label: 'Morning', icon: Sunrise },
-  { timing: 'afternoon', label: 'Afternoon', icon: Sun },
-  { timing: 'night', label: 'Night', icon: Moon },
+const GROUPS: { timing: DoseTiming; icon: typeof Sun }[] = [
+  { timing: 'morning', icon: Sunrise },
+  { timing: 'afternoon', icon: Sun },
+  { timing: 'night', icon: Moon },
 ];
 
 function PrescriptionDetailsScreen({
   navigation,
   route,
 }: RootStackScreenProps<typeof Routes.PrescriptionDetails>) {
+  const { t } = useTranslation();
   const prescriptionId = route.params?.prescriptionId;
   const query = usePrescription(prescriptionId ?? '');
   const styles = useThemedStyles(createStyles);
@@ -60,9 +62,9 @@ function PrescriptionDetailsScreen({
     return (
       <ScreenContainer edges={['bottom', 'left', 'right']}>
         <EmptyState
-          title="Prescription not found"
-          message="This prescription could not be opened."
-          actionLabel="Go back"
+          title={t('prescriptionNotFound')}
+          message={t('prescriptionOpenError')}
+          actionLabel={t('back')}
           onAction={() => navigation.goBack()}
         />
       </ScreenContainer>
@@ -73,7 +75,7 @@ function PrescriptionDetailsScreen({
     return (
       <ScreenContainer edges={['bottom', 'left', 'right']}>
         <ErrorState
-          title="Could not load prescription"
+          title={t('prescriptionLoadError')}
           onRetry={() => query.refetch()}
           retrying={query.isFetching}
         />
@@ -84,9 +86,9 @@ function PrescriptionDetailsScreen({
     return (
       <ScreenContainer edges={['bottom', 'left', 'right']}>
         <EmptyState
-          title="Prescription not found"
-          message="This prescription may no longer be available."
-          actionLabel="Go back"
+          title={t('prescriptionNotFound')}
+          message={t('prescriptionUnavailable')}
+          actionLabel={t('back')}
           onAction={() => navigation.goBack()}
         />
       </ScreenContainer>
@@ -121,18 +123,25 @@ function PrescriptionDetailsScreen({
           </View>
           <View style={styles.headerFooter}>
             <AppText variant="caption" color="textSecondary">
-              Issued{' '}
-              {formatClinicDay(prescription.issuedAt.slice(0, 10), Date.now())}
+              {t('issued', {
+                date: formatClinicDay(
+                  prescription.issuedAt.slice(0, 10),
+                  Date.now(),
+                ),
+              })}
             </AppText>
-            <Badge label={`Day ${dayNumber} of ${totalDays}`} tone="primary" />
+            <Badge
+              label={t('dayOf', { day: dayNumber, total: totalDays })}
+              tone="primary"
+            />
           </View>
         </Card>
 
         <View style={styles.scheduleTitle}>
           <View>
-            <AppText variant="heading">Medicine schedule</AppText>
+            <AppText variant="heading">{t('medicineSchedule')}</AppText>
             <AppText variant="caption" color="textSecondary">
-              Tap a dose when you’ve taken it
+              {t('tapDoseTaken')}
             </AppText>
           </View>
           <Clock3 size={sizes.iconMd} color={colors.primaryText} />
@@ -150,7 +159,7 @@ function PrescriptionDetailsScreen({
                 <View style={styles.groupIcon}>
                   <GroupIcon size={sizes.iconMd} color={colors.primaryText} />
                 </View>
-                <AppText variant="subheading">{group.label}</AppText>
+                <AppText variant="subheading">{t(group.timing)}</AppText>
                 <AppText variant="caption" color="textSecondary">
                   {formatMinutesOfDay(DOSE_TIMES[group.timing])}
                 </AppText>
@@ -196,6 +205,7 @@ function DoseRow({
   dose: DoseRef;
   active: boolean;
 }) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(createStyles);
   const { colors, sizes } = useTheme();
   const taken = useIsDoseTaken(dose);
@@ -220,9 +230,9 @@ function DoseRow({
     markTaken(dose);
     trigger('impactLight');
     toast.show({
-      message: `${medicine.name} marked taken`,
+      message: t('doseMarked', { medicine: medicine.name }),
       tone: 'success',
-      actionLabel: 'Undo',
+      actionLabel: t('undo'),
       onAction: () => unmark(dose),
     });
   };
@@ -239,13 +249,15 @@ function DoseRow({
         </AppText>
       </View>
       <Button
-        label={taken ? 'Taken' : 'Mark taken'}
+        label={taken ? t('taken') : t('markTaken')}
         variant={taken ? 'secondary' : 'primary'}
         icon={taken ? undefined : Check}
         disabled={!active}
-        accessibilityLabel={`${taken ? 'Unmark' : 'Mark'} ${medicine.name} ${
-          dose.timing
-        } dose ${taken ? 'taken' : 'as taken'}`}
+        accessibilityLabel={t('markDose', {
+          action: t(taken ? 'unmark' : 'mark'),
+          medicine: `${medicine.name} ${t(dose.timing)}`,
+          state: t(taken ? 'takenState' : 'asTaken'),
+        })}
         onPress={toggleDose}
         style={styles.doseButton}
       />
@@ -263,11 +275,12 @@ function DoseRow({
 
 function PrescriptionSkeleton() {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   return (
     <ScreenContainer edges={['bottom', 'left', 'right']}>
       <SkeletonGroup
         style={styles.content}
-        accessibilityLabel="Loading prescription"
+        accessibilityLabel={t('loadingPrescription')}
       >
         <View style={styles.skeletonHeader}>
           <SkeletonCircle size={56} />

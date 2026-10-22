@@ -1,6 +1,7 @@
 /**
  * Small pure helpers: dates, ₹ formatting, names.
  */
+import i18n from '../i18n';
 
 /** Indian grouping: 1200 → "₹1,200", 120000 → "₹1,20,000". Avoids relying on Intl support in the JS engine. */
 export function formatInr(amount: number): string {
@@ -69,21 +70,9 @@ export function hashString(value: string): number {
 }
 /* eslint-enable no-bitwise */
 
-const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+export function getAppLocaleTag(language = i18n.resolvedLanguage ?? 'en') {
+  return language === 'hi' ? 'hi-IN' : language === 'te' ? 'te-IN' : 'en-IN';
+}
 
 /** Hour (0–23) on the clinic's clock. */
 export const clinicHour = (nowMs: number): number =>
@@ -92,6 +81,16 @@ export const clinicHour = (nowMs: number): number =>
 /** "2026-10-22T16:30:00+05:30" → "4:30 PM". Reads the clinic-local time written in the timestamp. */
 export function formatClinicTime(iso: string): string {
   const [hours, minutes] = iso.slice(11, 16).split(':').map(Number);
+  const language = i18n.resolvedLanguage ?? 'en';
+  if (language !== 'en') {
+    const date = new Date(Date.UTC(2000, 0, 1, hours, minutes));
+    return new Intl.DateTimeFormat(getAppLocaleTag(language), {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'UTC',
+    }).format(date);
+  }
   const suffix = hours >= 12 ? 'PM' : 'AM';
   const hour12 = hours % 12 === 0 ? 12 : hours % 12;
   return `${hour12}:${String(minutes).padStart(2, '0')} ${suffix}`;
@@ -101,15 +100,18 @@ export function formatClinicTime(iso: string): string {
 export function formatClinicDay(date: string, nowMs: number): string {
   const offset = daysBetween(clinicDate(nowMs), date);
   if (offset === 0) {
-    return 'Today';
+    return i18n.t('today');
   }
   if (offset === 1) {
-    return 'Tomorrow';
+    return i18n.t('tomorrow');
   }
   const day = new Date(`${date}T00:00:00Z`);
-  return `${WEEKDAYS[day.getUTCDay()]} ${day.getUTCDate()} ${
-    MONTHS[day.getUTCMonth()]
-  }`;
+  return new Intl.DateTimeFormat(getAppLocaleTag(), {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  }).format(day);
 }
 
 /** "Good morning" / "Good afternoon" / "Good evening" by clinic time. */

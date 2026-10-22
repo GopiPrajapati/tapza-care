@@ -5,6 +5,7 @@ import type { LucideIcon } from 'lucide-react-native';
 import { DEFAULT_TABS } from '../commonutils/constants';
 import { useTheme } from '../commonutils/theme';
 import { getIcon } from '../components/Icon';
+import { useTranslateContent } from '../i18n/useTranslateContent';
 import { useConfig } from '../hooks/useConfig';
 import type { TabConfig, TabScreen } from '../networking/types/layoutConfig';
 import HomeScreen from '../screens/HomeScreen';
@@ -22,10 +23,16 @@ const Tab = createBottomTabNavigator<TabParamList>();
 type TabComponent = React.ComponentType<any>;
 
 /** config.tabs[].screen → tab route + component. */
-const SCREEN_MAP: Record<TabScreen, { route: keyof TabParamList; component: TabComponent }> = {
+const SCREEN_MAP: Record<
+  TabScreen,
+  { route: keyof TabParamList; component: TabComponent }
+> = {
   home: { route: Routes.Home, component: HomeScreen },
   bookings: { route: Routes.Bookings, component: MyBookingsScreen },
-  prescriptions: { route: Routes.Prescriptions, component: PrescriptionsScreen },
+  prescriptions: {
+    route: Routes.Prescriptions,
+    component: PrescriptionsScreen,
+  },
   profile: { route: Routes.Profile, component: ProfileScreen },
 };
 
@@ -43,7 +50,8 @@ const makeTabIcon =
   ({ color, size }: { color: string; size: number }) =>
     <Icon color={color} size={size} />;
 
-const isTabScreen = (screen: string): screen is TabScreen => screen in SCREEN_MAP;
+const isTabScreen = (screen: string): screen is TabScreen =>
+  screen in SCREEN_MAP;
 
 /**
  * Turns config tabs into renderable tabs. Unknown screens and repeated screens are skipped (route names must be
@@ -56,7 +64,9 @@ export function resolveTabs(tabs: TabConfig[]): ResolvedTab[] {
   for (const tab of tabs) {
     if (!isTabScreen(tab.screen) || seen.has(tab.screen)) {
       if (__DEV__) {
-        console.warn(`[tabs] Skipping tab "${tab.id}" with screen "${tab.screen}"`);
+        console.warn(
+          `[tabs] Skipping tab "${tab.id}" with screen "${tab.screen}"`,
+        );
       }
       continue;
     }
@@ -79,6 +89,7 @@ export function resolveTabs(tabs: TabConfig[]): ResolvedTab[] {
 function TabNavigator() {
   const { config } = useConfig();
   const { colors } = useTheme();
+  const translate = useTranslateContent();
   const resolved = useMemo(() => resolveTabs(config.tabs), [config.tabs]);
 
   const screenOptions = useMemo(
@@ -86,7 +97,10 @@ function TabNavigator() {
       headerShown: false,
       tabBarActiveTintColor: colors.primaryText,
       tabBarInactiveTintColor: colors.textSecondary,
-      tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+      tabBarStyle: {
+        backgroundColor: colors.surface,
+        borderTopColor: colors.border,
+      },
       tabBarAllowFontScaling: true,
     }),
     [colors],
@@ -94,18 +108,21 @@ function TabNavigator() {
 
   return (
     <Tab.Navigator screenOptions={screenOptions}>
-      {resolved.map(({ id, label, route, component, renderIcon }) => (
-        <Tab.Screen
-          key={id}
-          name={route}
-          component={component}
-          options={{
-            title: label,
-            tabBarAccessibilityLabel: label,
-            tabBarIcon: renderIcon,
-          }}
-        />
-      ))}
+      {resolved.map(({ id, label, route, component, renderIcon }) => {
+        const localizedLabel = translate(label);
+        return (
+          <Tab.Screen
+            key={id}
+            name={route}
+            component={component}
+            options={{
+              title: localizedLabel,
+              tabBarAccessibilityLabel: localizedLabel,
+              tabBarIcon: renderIcon,
+            }}
+          />
+        );
+      })}
     </Tab.Navigator>
   );
 }

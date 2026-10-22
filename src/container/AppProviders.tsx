@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { StatusBar, StyleSheet, View } from 'react-native';
+import { StatusBar, StyleSheet, View, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -8,6 +8,7 @@ import { buildTheme, ThemeProvider } from '../commonutils/theme';
 import { ToastProvider } from '../components/Toast';
 import { useConfig } from '../hooks/useConfig';
 import { useStoresHydrated } from '../store/hydration';
+import { useAppearanceStore } from '../store/appearanceStore';
 import { createQueryClient } from './queryClient';
 
 export interface AppProvidersProps {
@@ -17,7 +18,15 @@ export interface AppProvidersProps {
 /** Builds the theme from the current config, so switching config re-themes the whole app. */
 function ConfigThemeProvider({ children }: AppProvidersProps) {
   const { config } = useConfig();
-  const theme = useMemo(() => buildTheme(config.theme), [config.theme]);
+  const colorScheme = useColorScheme();
+  const preference = useAppearanceStore(state => state.preference);
+  const useDark =
+    preference === 'dark' ||
+    (preference === 'system' && colorScheme === 'dark');
+  const theme = useMemo(
+    () => buildTheme(config.theme, useDark),
+    [config.theme, useDark],
+  );
 
   return (
     <ThemeProvider theme={theme}>

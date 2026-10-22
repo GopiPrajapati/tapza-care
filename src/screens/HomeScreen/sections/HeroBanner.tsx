@@ -17,10 +17,12 @@ import { useConfig } from '../../../hooks/useConfig';
 import { useSectionAction } from '../../../hooks/useSectionAction';
 import type { HeroBannerSection } from '../../../networking/types/configSchema';
 import HeroArt from './HeroArt';
+import { useTranslateContent } from '../../../i18n/useTranslateContent';
 
 /** Greeting, festival wish, headline and one call to action, with an image or drawn illustration. */
 function HeroBanner({ section }: { section: HeroBannerSection }) {
   const styles = useThemedStyles(createStyles);
+  const translate = useTranslateContent();
   const { sizes } = useTheme();
   const tone = useTone();
   const onAction = useSectionAction();
@@ -32,25 +34,25 @@ function HeroBanner({ section }: { section: HeroBannerSection }) {
     <View style={styles.row}>
       <View style={styles.texts}>
         <AppText variant="label" color="textSecondary">
-          {greetingFor(Date.now())}, {PATIENT.firstName}
+          {translate(greetingFor(Date.now()))}, {PATIENT.firstName}
         </AppText>
         {festival ? (
           <View style={styles.festival}>
             <Sparkles size={sizes.iconSm} color={tone?.accent} />
             <AppText variant="label" style={styles.flex}>
-              {festival.greeting}
+              {translate(festival.greeting)}
             </AppText>
           </View>
         ) : null}
         <AppText variant="title" accessibilityRole="header">
-          {item.title}
+          {translate(item.title)}
         </AppText>
         {item.subtitle ? (
-          <AppText color="textSecondary">{item.subtitle}</AppText>
+          <AppText color="textSecondary">{translate(item.subtitle)}</AppText>
         ) : null}
         {item.ctaLabel ? (
           <Button
-            label={item.ctaLabel}
+            label={translate(item.ctaLabel)}
             variant="secondary"
             onPress={() => onAction(item.action)}
             style={styles.cta}

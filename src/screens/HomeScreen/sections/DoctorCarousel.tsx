@@ -23,12 +23,16 @@ import { Routes } from '../../../container/Routes';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import { useDoctors } from '../../../hooks/useDoctors';
 import type { DoctorCarouselSection } from '../../../networking/types/configSchema';
+import { useTranslateContent } from '../../../i18n/useTranslateContent';
+import { useTranslation } from 'react-i18next';
 import type { Doctor } from '../../../networking/types/models';
 
 const PLACEHOLDER_COUNT = 3;
 
 /** Horizontal doctor cards with each doctor's next free slot. */
 function DoctorCarousel({ section }: { section: DoctorCarouselSection }) {
+  const { t } = useTranslation();
+  const translate = useTranslateContent();
   const styles = useThemedStyles(createStyles);
   const navigation = useAppNavigation();
   const { data, isPending, isError, refetch, isRefetching } = useDoctors();
@@ -42,7 +46,7 @@ function DoctorCarousel({ section }: { section: DoctorCarouselSection }) {
   return (
     <View style={styles.wrapper}>
       <SectionHeader
-        title={section.title ?? 'Doctors'}
+        title={section.title ? translate(section.title) : t('doctorsTitle')}
         onSeeAll={() => navigation.navigate(Routes.DoctorList)}
       />
       {isPending ? (
@@ -50,10 +54,10 @@ function DoctorCarousel({ section }: { section: DoctorCarouselSection }) {
       ) : isError ? (
         <View style={styles.inlineError}>
           <AppText color="textSecondary" style={styles.flex}>
-            Could not load doctors.
+            {t('doctorsLoadInline')}
           </AppText>
           <Button
-            label="Retry"
+            label={t('retry')}
             variant="ghost"
             onPress={() => refetch()}
             loading={isRefetching}
@@ -87,13 +91,17 @@ const DoctorCard = memo(function DoctorCardView({
   doctor: Doctor;
   onPress: () => void;
 }) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(createStyles);
   return (
     <Card
       onPress={onPress}
-      accessibilityLabel={`${doctor.name}, ${doctor.specialty}, fee ${formatInr(
-        doctor.feeInr,
-      )}`}
+      accessibilityLabel={`${doctor.name}, ${t(doctor.specialty)}, ${t(
+        'speaksLanguages',
+        {
+          languages: doctor.languages.map(language => t(language)).join(', '),
+        },
+      )}, ${formatInr(doctor.feeInr)}`}
       style={styles.card}
     >
       <View style={styles.cardTop}>
@@ -103,12 +111,12 @@ const DoctorCard = memo(function DoctorCardView({
             {doctor.name}
           </AppText>
           <AppText variant="caption" color="primaryText">
-            {doctor.specialty}
+            {t(doctor.specialty)}
           </AppText>
         </View>
       </View>
       <AppText variant="caption" color="textSecondary" numberOfLines={1}>
-        {doctor.languages.join(' · ')}
+        {doctor.languages.map(language => t(language)).join(' · ')}
       </AppText>
       <View style={styles.cardBottom}>
         <PriceText amount={doctor.feeInr} />
@@ -121,8 +129,9 @@ const DoctorCard = memo(function DoctorCardView({
 function DoctorCardsSkeleton() {
   const styles = useThemedStyles(createStyles);
   const { sizes } = useTheme();
+  const { t } = useTranslation();
   return (
-    <SkeletonGroup accessibilityLabel="Loading doctors" style={styles.row}>
+    <SkeletonGroup accessibilityLabel={t('loadingDoctors')} style={styles.row}>
       {Array.from({ length: PLACEHOLDER_COUNT }, (_, index) => (
         <View key={index} style={[styles.card, styles.skeletonCard]}>
           <View style={styles.cardTop}>

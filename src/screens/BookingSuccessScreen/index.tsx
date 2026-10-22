@@ -29,6 +29,7 @@ import { useConfig } from '../../hooks/useConfig';
 import { useMyBookings } from '../../hooks/useBookings';
 import { useDoctor } from '../../hooks/useDoctors';
 import { useSlots } from '../../hooks/useSlots';
+import { useTranslation } from 'react-i18next';
 
 function slotDateAndTime(
   slotId: string,
@@ -43,6 +44,7 @@ function BookingSuccessScreen({
   navigation,
   route,
 }: RootStackScreenProps<typeof Routes.BookingSuccess>) {
+  const { t } = useTranslation();
   const { bookingId, doctorId, slotId, serviceId } = route.params;
   const { data: bookings } = useMyBookings();
   const { doctor } = useDoctor(doctorId);
@@ -105,7 +107,7 @@ function BookingSuccessScreen({
   const confirmed = booking?.status === 'confirmed';
   const dateLabel = startsAt
     ? formatClinicDay(startsAt.slice(0, 10), Date.now())
-    : 'Your selected appointment';
+    : t('selectedAppointment');
 
   return (
     <ScreenContainer style={styles.screen}>
@@ -123,7 +125,7 @@ function BookingSuccessScreen({
               />
             </Animated.View>
           ) : (
-            <View accessible accessibilityLabel="Booking success animation">
+            <View accessible accessibilityLabel={t('bookingSuccessAnimation')}>
               <LottieView
                 source={require('../../assets/animations/booking-success.json')}
                 autoPlay
@@ -136,10 +138,10 @@ function BookingSuccessScreen({
           )}
         </Animated.View>
         <AppText variant="heading" align="center" accessibilityRole="header">
-          {confirmed ? 'Appointment confirmed' : 'Booking your appointment'}
+          {confirmed ? t('appointmentConfirmed') : t('bookingAppointment')}
         </AppText>
         <Badge
-          label={confirmed ? 'Confirmed' : 'Pending confirmation'}
+          label={confirmed ? t('confirmed') : t('pendingConfirmation')}
           tone={confirmed ? 'success' : 'warning'}
         />
 
@@ -150,11 +152,11 @@ function BookingSuccessScreen({
             ) : null}
             <View style={styles.doctorInfo}>
               <AppText variant="bodyStrong">
-                {doctor?.name ?? 'Your doctor'}
+                {doctor?.name ?? t('yourDoctor')}
               </AppText>
               {doctor ? (
                 <AppText variant="caption" color="textSecondary">
-                  {doctor.specialty}
+                  {t(doctor.specialty)}
                 </AppText>
               ) : null}
             </View>
@@ -162,13 +164,15 @@ function BookingSuccessScreen({
               <PriceText amount={fee} variant="title" />
             ) : null}
           </View>
-          {service ? <AppText variant="label">{service.name}</AppText> : null}
+          {service ? (
+            <AppText variant="label">{t(service.name)}</AppText>
+          ) : null}
           <View style={styles.detailRow}>
             <Clock3 size={sizes.iconMd} color={colors.primaryText} />
             <AppText>
               {startsAt
                 ? `${dateLabel}, ${formatClinicTime(startsAt)}`
-                : 'Your selected date and time'}
+                : t('selectedDateTime')}
             </AppText>
           </View>
           <View style={styles.detailRow}>
@@ -185,13 +189,11 @@ function BookingSuccessScreen({
         </Card>
 
         <AppText variant="caption" color="textSecondary" align="center">
-          {confirmed
-            ? 'We’ve saved your appointment. You can find it in My bookings.'
-            : 'Please wait while we confirm your selected time.'}
+          {confirmed ? t('appointmentSaved') : t('waitingConfirmation')}
         </AppText>
         <View style={styles.actions}>
           <Button
-            label="View my bookings"
+            label={t('viewBookings')}
             onPress={() =>
               navigation.popTo(Routes.MainTabs, { screen: Routes.Bookings })
             }
@@ -199,7 +201,7 @@ function BookingSuccessScreen({
             fullWidth
           />
           <Button
-            label="Back to home"
+            label={t('backHome')}
             onPress={goHome}
             variant="secondary"
             fullWidth

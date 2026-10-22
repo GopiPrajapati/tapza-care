@@ -4,11 +4,13 @@ import { useToast } from '../components/Toast';
 import { Routes } from '../container/Routes';
 import type { AppAction } from '../networking/types/configSchema';
 import { useAppNavigation } from './useAppNavigation';
+import { useTranslation } from 'react-i18next';
 
 /** Turns a config action (chip, tile, banner CTA) into navigation. Unknown actions do nothing. */
 export function useSectionAction() {
   const navigation = useAppNavigation();
   const toast = useToast();
+  const { t } = useTranslation();
 
   return useCallback(
     (action: AppAction | undefined) => {
@@ -34,12 +36,12 @@ export function useSectionAction() {
           navigation.navigate(Routes.MainTabs, { screen: Routes.Profile });
           break;
         case 'coming_soon':
-          toast.show({ message: 'Coming soon to Tapza Care' });
+          toast.show({ message: t('comingSoonTapza') });
           break;
         default:
           break;
       }
     },
-    [navigation, toast],
+    [navigation, toast, t],
   );
 }

@@ -14,6 +14,7 @@ import {
 import AppText from '../../../components/AppText';
 import PressableScale from '../../../components/PressableScale';
 import { useHomeScroll } from './HomeScrollContext';
+import { useTranslation } from 'react-i18next';
 
 /** Scroll distance over which the pill fades and slides in. */
 const REVEAL_DISTANCE = 80;
@@ -34,6 +35,7 @@ export interface BackToTopProps {
  */
 function BackToTop({ top, showAfter, active, onPress }: BackToTopProps) {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   const { colors, sizes, spacing } = useTheme();
   const { scrollY } = useHomeScroll();
 
@@ -58,13 +60,13 @@ function BackToTop({ top, showAfter, active, onPress }: BackToTopProps) {
       importantForAccessibility={active ? 'auto' : 'no-hide-descendants'}
     >
       <PressableScale
-        accessibilityLabel="Back to top"
+        accessibilityLabel={t('backToTop')}
         onPress={onPress}
         style={styles.pill}
       >
         <ArrowUp size={sizes.iconSm} color={colors.onInverse} />
         <AppText variant="label" color="onInverse">
-          Back to top
+          {t('backToTop')}
         </AppText>
       </PressableScale>
     </Animated.View>

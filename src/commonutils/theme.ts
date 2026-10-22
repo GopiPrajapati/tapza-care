@@ -210,6 +210,7 @@ export interface Theme {
   elevation: Record<'none' | 'card' | 'raised', ViewStyle>;
   statusBarStyle: StatusBarStyle;
   isFestival: boolean;
+  isDark: boolean;
 }
 
 /** Base hues for status colours; adjusted per theme for contrast. */
@@ -219,12 +220,13 @@ const STATUS_HUES = {
   danger: '#B91C1C',
 };
 
-export function buildTheme(config: ThemeConfig): Theme {
-  const { primary, secondary, background, surface, accent } = config;
+export function buildTheme(config: ThemeConfig, useDark = false): Theme {
+  const palette = useDark && config.dark ? config.dark : config;
+  const { primary, secondary, background, surface, accent } = palette;
   const surfaces = [background, surface];
 
-  const textPrimary = ensureContrast(config.textPrimary, surfaces);
-  const textSecondary = ensureContrast(config.textSecondary, surfaces);
+  const textPrimary = ensureContrast(palette.textPrimary, surfaces);
+  const textSecondary = ensureContrast(palette.textSecondary, surfaces);
   const status = (hue: string) => ensureContrast(hue, surfaces);
   const success = status(STATUS_HUES.success);
   const warning = status(STATUS_HUES.warning);
@@ -252,7 +254,7 @@ export function buildTheme(config: ThemeConfig): Theme {
     danger,
     onDanger: textOnFill(danger),
     dangerSurface: mix(surface, danger, 0.1),
-    overlay: withAlpha(textPrimary, 0.45),
+    overlay: withAlpha(useDark ? BLACK : textPrimary, 0.45),
     inverseSurface: textPrimary,
     onInverse: surface,
     skeleton: mix(surface, textPrimary, 0.08),
@@ -286,6 +288,7 @@ export function buildTheme(config: ThemeConfig): Theme {
     },
     statusBarStyle: isLight(background) ? 'dark-content' : 'light-content',
     isFestival: Boolean(config.festival),
+    isDark: useDark && Boolean(config.dark),
   };
 }
 

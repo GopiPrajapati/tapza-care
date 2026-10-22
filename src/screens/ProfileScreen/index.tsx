@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
+import Chip from '../../components/Chip';
 import {
   CalendarDays,
   ChevronRight,
@@ -10,6 +11,7 @@ import {
   Users,
   Pill,
   Code2,
+  Sun,
 } from 'lucide-react-native';
 
 import packageJson from '../../../package.json';
@@ -20,18 +22,27 @@ import Avatar from '../../components/Avatar';
 import Card from '../../components/Card';
 import ScreenContainer from '../../components/ScreenContainer';
 import { useToast } from '../../components/Toast';
+import { useTranslation } from 'react-i18next';
 import { Routes, type TabScreenProps } from '../../container/Routes';
+import { useLanguageStore } from '../../store/languageStore';
+import { useAppearanceStore } from '../../store/appearanceStore';
 
 function ProfileScreen({ navigation }: TabScreenProps<typeof Routes.Profile>) {
   const styles = useThemedStyles(createStyles);
   const toast = useToast();
-  const comingSoon = () => toast.show({ message: 'Coming soon', tone: 'info' });
+  const { t } = useTranslation();
+  const language = useLanguageStore(state => state.language);
+  const setLanguage = useLanguageStore(state => state.setLanguage);
+  const appearance = useAppearanceStore(state => state.preference);
+  const setAppearance = useAppearanceStore(state => state.setPreference);
+  const comingSoon = () =>
+    toast.show({ message: t('comingSoon'), tone: 'info' });
 
   return (
     <ScreenContainer edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={styles.content}>
         <AppText variant="title" accessibilityRole="header">
-          Profile
+          {t('profileTitle')}
         </AppText>
         <Card style={styles.profileCard}>
           <Avatar name={PATIENT.fullName} size="lg" />
@@ -43,56 +54,95 @@ function ProfileScreen({ navigation }: TabScreenProps<typeof Routes.Profile>) {
 
         <View style={styles.tiles}>
           <ProfileTile
-            label="My bookings"
+            label={t('myBookings')}
             icon={CalendarDays}
             onPress={() => navigation.navigate(Routes.Bookings)}
           />
           <ProfileTile
-            label="Prescriptions"
+            label={t('prescriptionsTitle')}
             icon={Pill}
             onPress={() => navigation.navigate(Routes.Prescriptions)}
           />
-          <ProfileTile label="Family" icon={Users} onPress={comingSoon} />
+          <ProfileTile label={t('family')} icon={Users} onPress={comingSoon} />
         </View>
 
-        <ListGroup title="Your account">
+        <ListGroup title={t('yourAccount')}>
           <ProfileRow
-            title="Family members"
+            title={t('familyMembers')}
             subtitle="Riya Prajapati · Aarav Prajapati"
             icon={Users}
             onPress={comingSoon}
           />
           <ProfileRow
-            title="Saved clinics"
+            title={t('savedClinics')}
             subtitle="Tapza Clinic · Kondapur"
             icon={Building2}
             onPress={comingSoon}
           />
         </ListGroup>
-        <ListGroup title="Preferences & support">
+        <ListGroup title={t('preferencesSupport')}>
           <ProfileRow
-            title="Language"
-            subtitle="English · More languages coming soon"
-            icon={Languages}
-            onPress={comingSoon}
+            title={t('appearance')}
+            subtitle={t('chooseAppearance')}
+            icon={Sun}
           />
+          <View
+            style={styles.languageChoices}
+            accessibilityLabel={t('chooseAppearance')}
+          >
+            {(['system', 'light', 'dark'] as const).map(option => (
+              <Chip
+                key={option}
+                label={t(
+                  `appearance${option[0].toUpperCase()}${option.slice(1)}`,
+                )}
+                selected={appearance === option}
+                onPress={() => setAppearance(option)}
+              />
+            ))}
+          </View>
           <ProfileRow
-            title="Notifications"
-            subtitle="Manage reminders and updates"
+            title={t('language')}
+            subtitle={t('selectLanguage')}
+            icon={Languages}
+          />
+          <View
+            style={styles.languageChoices}
+            accessibilityLabel={t('selectLanguage')}
+          >
+            <Chip
+              label={t('languageNameEnglish')}
+              selected={language === 'en'}
+              onPress={() => setLanguage('en')}
+            />
+            <Chip
+              label={t('languageNameHindi')}
+              selected={language === 'hi'}
+              onPress={() => setLanguage('hi')}
+            />
+            <Chip
+              label={t('languageNameTelugu')}
+              selected={language === 'te'}
+              onPress={() => setLanguage('te')}
+            />
+          </View>
+          <ProfileRow
+            title={t('notifications')}
+            subtitle={t('manageNotifications')}
             icon={Bell}
             onPress={comingSoon}
           />
           <ProfileRow
-            title="Help & support"
-            subtitle="We’re here to help"
+            title={t('helpSupport')}
+            subtitle={t('hereToHelp')}
             icon={CircleHelp}
             onPress={comingSoon}
           />
         </ListGroup>
-        <ListGroup title="Developer">
+        <ListGroup title={t('developer')}>
           <ProfileRow
-            title="Developer settings"
-            subtitle="Config and mock network controls"
+            title={t('developerSettings')}
+            subtitle={t('developerDescription')}
             icon={Code2}
             onPress={() => navigation.navigate(Routes.AdminSettings)}
           />
@@ -158,7 +208,7 @@ function ProfileRow({
   title: string;
   subtitle: string;
   icon: typeof Users;
-  onPress: () => void;
+  onPress?: () => void;
 }) {
   const styles = useThemedStyles(createStyles);
   const { colors, sizes } = useTheme();
@@ -176,7 +226,9 @@ function ProfileRow({
           {subtitle}
         </AppText>
       </View>
-      <ChevronRight size={sizes.iconMd} color={colors.textSecondary} />
+      {onPress ? (
+        <ChevronRight size={sizes.iconMd} color={colors.textSecondary} />
+      ) : null}
     </Card>
   );
 }
@@ -195,6 +247,13 @@ const createStyles = ({ colors, spacing, sizes }: Theme) => ({
   },
   patientInfo: { flex: 1, gap: spacing.xs },
   tiles: { flexDirection: 'row' as const, gap: spacing.sm },
+  languageChoices: {
+    flexDirection: 'row' as const,
+    flexWrap: 'wrap' as const,
+    gap: spacing.xs,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+  },
   tile: {
     flex: 1,
     alignItems: 'center' as const,

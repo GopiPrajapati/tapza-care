@@ -9,7 +9,12 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 
 import { getImage } from '../../../assets/images';
-import { toneOn, ToneProvider, useTheme } from '../../../commonutils/theme';
+import {
+  mix,
+  toneOn,
+  ToneProvider,
+  useTheme,
+} from '../../../commonutils/theme';
 import type { SectionBackground as SectionBackgroundConfig } from '../../../networking/types/layoutConfig';
 
 export interface SectionBackgroundProps {
@@ -23,20 +28,29 @@ export interface SectionBackgroundProps {
  * Image backgrounds fall back to the brand gradient when the image key is not bundled.
  */
 export function useSectionPaint(background: SectionBackgroundConfig) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const image =
     background.kind === 'image' ? getImage(background.value) : undefined;
 
   const stops = useMemo(() => {
     if (background.kind === 'color') {
-      return [background.value];
+      return [
+        isDark
+          ? mix(background.value, colors.background, 0.82)
+          : background.value,
+      ];
     }
     if (background.kind === 'gradient') {
-      return background.value.split(',').map(stop => stop.trim());
+      return background.value.split(',').map(stop => {
+        const color = stop.trim();
+        return isDark ? mix(color, colors.background, 0.82) : color;
+      });
     }
     // Text on an image sits on a dark scrim; without the image, use the brand gradient.
-    return image ? [colors.inverseSurface] : [colors.primary, colors.secondary];
-  }, [background, image, colors]);
+    return image
+      ? [isDark ? colors.background : colors.inverseSurface]
+      : [colors.primary, colors.secondary];
+  }, [background, image, colors, isDark]);
 
   const tone = useMemo(() => toneOn(stops, colors), [stops, colors]);
   return { image, stops, tone };

@@ -23,6 +23,7 @@ import {
   daysBetween,
   formatClinicDay,
   formatClinicTime,
+  getAppLocaleTag,
 } from '../../commonutils/helpers';
 import { useTheme, useThemedStyles, type Theme } from '../../commonutils/theme';
 import AppText from '../../components/AppText';
@@ -45,13 +46,14 @@ import { useCreateBooking } from '../../hooks/useBookings';
 import { useConfig } from '../../hooks/useConfig';
 import type { Slot } from '../../networking/types/models';
 import { Routes, type RootStackScreenProps } from '../../container/Routes';
+import { useTranslation } from 'react-i18next';
 
 const DATE_COUNT = 7;
 const SHEET_SNAP_POINTS = ['45%', '90%'];
 const SLOT_GROUPS = [
-  { label: 'Morning', from: 5, to: 12 },
-  { label: 'Afternoon', from: 12, to: 17 },
-  { label: 'Evening', from: 17, to: 24 },
+  { labelKey: 'morning', from: 5, to: 12 },
+  { labelKey: 'afternoon', from: 12, to: 17 },
+  { labelKey: 'evening', from: 17, to: 24 },
 ] as const;
 
 function getSlotHour(slot: Slot): number {
@@ -62,9 +64,10 @@ function DoctorDetailsScreen({
   navigation,
   route,
 }: RootStackScreenProps<typeof Routes.DoctorDetails>) {
+  const { t } = useTranslation();
   const doctorId = route.params?.doctorId;
   const serviceId = route.params?.serviceId;
-  const { doctor, isLoading, isError, error, refetch, isFetching } = useDoctor(
+  const { doctor, isLoading, isError, refetch, isFetching } = useDoctor(
     doctorId ?? '',
   );
   const { config } = useConfig();
@@ -157,13 +160,11 @@ function DoctorDetailsScreen({
       return;
     }
     handledFailureAt.current = submittedAt;
-    recoveryMessage.current = isSlotTaken
-      ? 'That slot was just taken. Please pick another time.'
-      : 'Booking failed. Please choose a time and try again.';
+    recoveryMessage.current = isSlotTaken ? t('slotTaken') : t('bookingFailed');
     setSelectedSlot(null);
     trigger('notificationError');
     navigation.goBack();
-  }, [bookingFailed, isSlotTaken, submittedAt, navigation]);
+  }, [bookingFailed, isSlotTaken, submittedAt, navigation, t]);
 
   const confirmBooking = useCallback(() => {
     if (!selectedSlot || !doctorId || bookingPending) return;
@@ -192,9 +193,9 @@ function DoctorDetailsScreen({
     return (
       <ScreenContainer edges={['bottom', 'left', 'right']}>
         <EmptyState
-          title="Doctor not found"
-          message="We couldn’t open this doctor’s details. Please go back and choose a doctor."
-          actionLabel="Go back"
+          title={t('doctorNotFound')}
+          message={t('doctorOpenError')}
+          actionLabel={t('back')}
           onAction={() => navigation.goBack()}
         />
       </ScreenContainer>
@@ -213,8 +214,8 @@ function DoctorDetailsScreen({
     return (
       <ScreenContainer edges={['bottom', 'left', 'right']}>
         <ErrorState
-          title="Couldn’t load doctor"
-          message={error instanceof Error ? error.message : 'Please try again.'}
+          title={t('doctorLoadError')}
+          message={t('pleaseTryAgain')}
           onRetry={() => refetch()}
           retrying={isFetching}
         />
@@ -226,9 +227,9 @@ function DoctorDetailsScreen({
     return (
       <ScreenContainer edges={['bottom', 'left', 'right']}>
         <EmptyState
-          title="Doctor not found"
-          message="This doctor may no longer be available. Choose another doctor to continue."
-          actionLabel="Go back"
+          title={t('doctorNotFound')}
+          message={t('doctorUnavailable')}
+          actionLabel={t('back')}
           onAction={() => navigation.goBack()}
         />
       </ScreenContainer>
@@ -261,9 +262,13 @@ function DoctorDetailsScreen({
               <Avatar name={doctor.name} image={doctor.photoUrl} size="lg" />
               <View style={styles.doctorDetails}>
                 <AppText variant="title">{doctor.name}</AppText>
-                <AppText color="textSecondary">{doctor.specialty}</AppText>
+                <AppText color="textSecondary">{t(doctor.specialty)}</AppText>
                 <AppText variant="caption" color="textSecondary">
-                  Speaks {doctor.languages.join(' · ')}
+                  {t('speaksLanguages', {
+                    languages: doctor.languages
+                      .map(language => t(language))
+                      .join(' · '),
+                  })}
                 </AppText>
               </View>
             </View>
@@ -279,7 +284,7 @@ function DoctorDetailsScreen({
               </View>
               <View style={styles.fee}>
                 <AppText variant="caption" color="textSecondary">
-                  {service ? 'Service fee' : 'Consultation'}
+                  {service ? t('serviceFee') : t('consultation')}
                 </AppText>
                 <PriceText amount={fee} variant="title" />
               </View>
@@ -287,18 +292,18 @@ function DoctorDetailsScreen({
             {service ? (
               <View style={styles.serviceSelection}>
                 <AppText variant="caption" color="textSecondary">
-                  Selected service
+                  {t('selectedService')}
                 </AppText>
-                <AppText variant="bodyStrong">{service.name}</AppText>
+                <AppText variant="bodyStrong">{t(service.name)}</AppText>
               </View>
             ) : null}
           </Card>
 
           <View style={styles.sectionHeading}>
             <View style={styles.headingText}>
-              <AppText variant="title">Choose a date</AppText>
+              <AppText variant="title">{t('chooseDate')}</AppText>
               <AppText variant="caption" color="textSecondary">
-                Appointments over the next 7 days
+                {t('appointmentsNext7Days')}
               </AppText>
             </View>
             <CalendarDays size={sizes.iconMd} color={colors.primaryText} />
@@ -323,7 +328,7 @@ function DoctorDetailsScreen({
           <Card style={styles.timeCard}>
             <View style={styles.timeHeader}>
               <View style={styles.headingText}>
-                <AppText variant="title">Choose a time</AppText>
+                <AppText variant="title">{t('chooseTime')}</AppText>
                 <AppText variant="caption" color="textSecondary">
                   {selectedSlot
                     ? formatClinicTime(selectedSlot.startsAt)
@@ -333,7 +338,7 @@ function DoctorDetailsScreen({
               <Clock3 size={sizes.iconMd} color={colors.primaryText} />
             </View>
             <Button
-              label="Choose time"
+              label={t('chooseTimeButton')}
               variant="secondary"
               onPress={openSheet}
               fullWidth
@@ -342,7 +347,7 @@ function DoctorDetailsScreen({
         </ScrollView>
 
         <StickyActionBar
-          label={service?.name ?? 'Consultation'}
+          label={service ? t(service.name) : t('consultation')}
           amountInr={fee}
           caption={
             selectedSlot
@@ -352,7 +357,7 @@ function DoctorDetailsScreen({
                 )}, ${formatClinicTime(selectedSlot.startsAt)}`
               : formatClinicDay(selectedDate, Date.now())
           }
-          buttonLabel="Confirm booking"
+          buttonLabel={t('confirmBooking')}
           onPress={confirmBooking}
           disabled={!selectedSlot || bookingPending}
           loading={bookingPending}
@@ -361,7 +366,9 @@ function DoctorDetailsScreen({
 
       <BottomSheet
         ref={sheetRef}
-        title={`Available times · ${formatClinicDay(selectedDate, Date.now())}`}
+        title={t('availableTimes', {
+          date: formatClinicDay(selectedDate, Date.now()),
+        })}
         snapPoints={SHEET_SNAP_POINTS}
         scrollable
       >
@@ -369,8 +376,8 @@ function DoctorDetailsScreen({
           <SlotSkeleton />
         ) : selectedQuery?.isError ? (
           <ErrorState
-            title="Couldn’t load appointment times"
-            message="Please retry, or choose another date."
+            title={t('appointmentTimesError')}
+            message={t('retryChooseDate')}
             onRetry={() => selectedQuery.refetch()}
             retrying={selectedQuery.isFetching}
           />
@@ -382,8 +389,8 @@ function DoctorDetailsScreen({
         ) : (
           <View style={styles.slotGroups}>
             {slotsByGroup.map(group => (
-              <View key={group.label} style={styles.slotGroup}>
-                <AppText variant="bodyStrong">{group.label}</AppText>
+              <View key={group.labelKey} style={styles.slotGroup}>
+                <AppText variant="bodyStrong">{t(group.labelKey)}</AppText>
                 <View style={styles.slotGrid}>
                   {group.slots.map(slot => (
                     <SlotChoice
@@ -414,6 +421,7 @@ function DateChoice({
   selected: boolean;
   onPress: () => void;
 }) {
+  const { t } = useTranslation();
   const { colors, spacing, sizes } = useTheme();
   const styles = useThemedStyles(createStyles);
   const progress = useSharedValue(selected ? 1 : 0);
@@ -439,10 +447,10 @@ function DateChoice({
   const dateValue = new Date(`${date}T00:00:00Z`);
   const weekday =
     daysBetween(today, date) === 0
-      ? 'Today'
+      ? t('today')
       : daysBetween(today, date) === 1
-      ? 'Tomorrow'
-      : dateValue.toLocaleDateString('en-IN', {
+      ? t('tomorrow')
+      : dateValue.toLocaleDateString(getAppLocaleTag(), {
           weekday: 'short',
           timeZone: 'UTC',
         });
@@ -450,11 +458,14 @@ function DateChoice({
 
   return (
     <PressableScale
-      accessibilityLabel={`${weekday}, ${dateValue.toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'short',
-        timeZone: 'UTC',
-      })}`}
+      accessibilityLabel={t('dateAccessibility', {
+        weekday,
+        date: dateValue.toLocaleDateString(getAppLocaleTag(), {
+          day: 'numeric',
+          month: 'short',
+          timeZone: 'UTC',
+        }),
+      })}
       accessibilityState={{ selected }}
       onPress={onPress}
       style={{ minWidth: sizes.minTouch + spacing.md, marginRight: spacing.sm }}
@@ -467,7 +478,7 @@ function DateChoice({
           {dateValue.getUTCDate()}
         </AppText>
         <AppText variant="caption" style={{ color: foreground }}>
-          {dateValue.toLocaleDateString('en-IN', {
+          {dateValue.toLocaleDateString(getAppLocaleTag(), {
             month: 'short',
             timeZone: 'UTC',
           })}
@@ -503,16 +514,13 @@ function EmptySlots({
   canJump: boolean;
   onJump: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <EmptyState
-      title="No slots on this day, try tomorrow"
-      message={
-        canJump
-          ? 'We found the next day with an available appointment.'
-          : 'There are no more available times in the next 7 days.'
-      }
+      title={t('noSlots')}
+      message={canJump ? t('nextDaySlots') : t('noMoreSlots')}
       illustration="bookings"
-      actionLabel={canJump ? 'Next available day' : undefined}
+      actionLabel={canJump ? t('nextAvailableDay') : undefined}
       onAction={canJump ? onJump : undefined}
     />
   );
@@ -520,10 +528,11 @@ function EmptySlots({
 
 function SlotSkeleton() {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   return (
     <SkeletonGroup
       style={styles.slotGroups}
-      accessibilityLabel="Loading appointment times"
+      accessibilityLabel={t('loadingSlots')}
     >
       {[0, 1, 2].map(group => (
         <View key={group} style={styles.slotGroup}>
@@ -541,10 +550,11 @@ function SlotSkeleton() {
 
 function DoctorDetailsSkeleton() {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   return (
     <SkeletonGroup
       style={styles.skeletonPage}
-      accessibilityLabel="Loading doctor details and appointment times"
+      accessibilityLabel={t('loadingDoctorDetails')}
     >
       <SkeletonBox height={190} />
       <SkeletonBox height={30} width={180} />

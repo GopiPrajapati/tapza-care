@@ -3,6 +3,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { useTheme, useThemedStyles, type Theme } from '../../commonutils/theme';
 import AppText from '../AppText';
+import { useTranslation } from 'react-i18next';
 
 export interface LoadingProps {
   /** Shown under the spinner and read by screen readers. */
@@ -10,18 +11,20 @@ export interface LoadingProps {
 }
 
 /** Generic spinner for actions. Lists and pages use shape-matched skeletons instead. */
-function Loading({ label = 'Loading' }: LoadingProps) {
+function Loading({ label }: LoadingProps) {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
+  const loadingLabel = label ?? t('loading');
   return (
     <View
       style={styles.center}
       accessible
       accessibilityRole="progressbar"
-      accessibilityLabel={label}
+      accessibilityLabel={loadingLabel}
     >
       <ActivityIndicator color={colors.primaryText} size="large" />
-      <AppText color="textSecondary">{label}</AppText>
+      <AppText color="textSecondary">{loadingLabel}</AppText>
     </View>
   );
 }

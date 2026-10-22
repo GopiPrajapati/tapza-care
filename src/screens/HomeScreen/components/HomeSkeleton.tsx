@@ -13,15 +13,17 @@ import {
   SkeletonGroup,
   SkeletonText,
 } from '../../../components/Skeleton';
+import { useTranslation } from 'react-i18next';
 
 /** Loading layout shaped like the real Home: band with header and hero, tiles, chips, a grid and a carousel. */
 function HomeSkeleton() {
   const styles = useThemedStyles(createStyles);
   const { sizes, spacing, radii } = useTheme();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   return (
-    <SkeletonGroup accessibilityLabel="Loading home" style={styles.root}>
+    <SkeletonGroup accessibilityLabel={t('loadingHome')} style={styles.root}>
       <View style={[styles.band, { paddingTop: insets.top + spacing.lg }]}>
         <View style={styles.headerRow}>
           <View style={styles.flex}>

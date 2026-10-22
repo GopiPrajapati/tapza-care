@@ -11,9 +11,11 @@ import Card from '../../../components/Card';
 import Icon from '../../../components/Icon';
 import { useSectionAction } from '../../../hooks/useSectionAction';
 import type { QuickActionsSection } from '../../../networking/types/configSchema';
+import { useTranslateContent } from '../../../i18n/useTranslateContent';
 
 /** Large tiles for the main jobs (Book, Prescriptions, Reminders, Family). 4 items → 2×2, otherwise 3 per row. */
 function QuickActions({ section }: { section: QuickActionsSection }) {
+  const translate = useTranslateContent();
   const styles = useThemedStyles(createStyles);
   const { spacing } = useTheme();
   const { width } = useWindowDimensions();
@@ -28,7 +30,7 @@ function QuickActions({ section }: { section: QuickActionsSection }) {
         <Card
           key={item.id}
           onPress={() => onAction(item.action)}
-          accessibilityLabel={item.label}
+          accessibilityLabel={translate(item.label)}
           style={[
             styles.tile,
             { width: tileWidth },
@@ -39,7 +41,7 @@ function QuickActions({ section }: { section: QuickActionsSection }) {
             <Icon name={item.icon} color="primaryText" />
           </View>
           <AppText variant="bodyStrong" numberOfLines={2} style={styles.label}>
-            {item.label}
+            {translate(item.label)}
           </AppText>
         </Card>
       ))}

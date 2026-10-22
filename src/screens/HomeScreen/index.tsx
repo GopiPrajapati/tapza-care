@@ -37,6 +37,7 @@ import StickyHomeHeader from './components/StickyHomeHeader';
 import TopBand from './components/TopBand';
 import SectionBlock from './sections/SectionBlock';
 import { useSectionPaint } from './sections/SectionBackground';
+import { useTranslation } from 'react-i18next';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList<Section>);
 
@@ -63,6 +64,7 @@ type ViewableItemsChanged = NonNullable<
  * is its own coloured band that fades in once when first seen. Scroll effects run on the UI thread.
  */
 function HomeScreen() {
+  const { t } = useTranslation();
   const { config, isLoading, isStale, source, refetch, isRefetching } =
     useConfig();
 
@@ -73,8 +75,8 @@ function HomeScreen() {
     return (
       <ScreenContainer edges={['top', 'left', 'right']}>
         <ErrorState
-          title="Home is unavailable"
-          message="We could not load the home screen. Please try again."
+          title={t('homeUnavailable')}
+          message={t('homeError')}
           onRetry={refetch}
           retrying={isRefetching}
         />

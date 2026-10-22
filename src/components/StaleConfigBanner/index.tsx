@@ -5,6 +5,7 @@ import { CloudOff } from 'lucide-react-native';
 import { useTheme, useThemedStyles, type Theme } from '../../commonutils/theme';
 import AppText from '../AppText';
 import PressableScale from '../PressableScale';
+import { useTranslation } from 'react-i18next';
 
 export interface StaleConfigBannerProps {
   onRetry: () => void;
@@ -21,8 +22,9 @@ function StaleConfigBanner({
 }: StaleConfigBannerProps) {
   const { colors, sizes } = useTheme();
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   const message =
-    source === 'saved' ? 'Showing saved layout' : 'Showing default layout';
+    source === 'saved' ? t('showingSavedLayout') : t('showingDefaultLayout');
 
   return (
     <View style={styles.banner} accessibilityRole="alert">
@@ -31,7 +33,7 @@ function StaleConfigBanner({
         {message}
       </AppText>
       <PressableScale
-        accessibilityLabel="Retry loading the latest layout"
+        accessibilityLabel={t('retryLatestLayout')}
         accessibilityState={{ busy: retrying }}
         disabled={retrying}
         onPress={onRetry}
@@ -41,7 +43,7 @@ function StaleConfigBanner({
           <ActivityIndicator color={colors.warning} />
         ) : (
           <AppText variant="label" color="warning">
-            Retry
+            {t('retry')}
           </AppText>
         )}
       </PressableScale>
