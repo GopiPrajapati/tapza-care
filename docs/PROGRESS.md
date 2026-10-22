@@ -1,7 +1,7 @@
-# Tapza Care — progress handoff (Phases 0–9)
+# Tapza Care — progress handoff (Phases 0–11)
 
 Use this file to continue in a new session. Give the new session this file plus `CLAUDE.md`,
-`AI_LOG.md` and `docs/phase-prompts.md`, then paste the next phase prompt (Phase 10).
+`AI_LOG.md` and `docs/phase-prompts.md`, then paste the next phase prompt (Phase 12).
 
 ## User context and design preferences
 - This is a React Native + strict TypeScript take-home assignment. Follow `CLAUDE.md` and the assignment PDF: mock backend/data only (no production backend), config-driven home/theme/tabs/sections, booking and prescriptions/reminders, resilience states, accessibility, and meaningful tests.
@@ -24,11 +24,12 @@ Use this file to continue in a new session. Give the new session this file plus 
 | 8 | Home motion (collapsing header, parallax, back-to-top) | ✅ merged | feat/home-animations |
 | 9 | Doctor list (search, filters, cards, states) | ✅ done, **commit/merge if not yet** | feat/doctor-list |
 | 10 | Doctor details + date/slot selection UI | ✅ done, **commit/merge if not yet** | feat/booking-flow |
-| 11 | Booking confirm, success, My Bookings | ⏳ next | see docs/phase-prompts.md |
+| 11 | Booking confirm, success, My Bookings | ✅ done, **commit/merge if not yet** | feat/booking-flow |
 | 12–16 | Prescriptions, profile/admin, polish, bonus | ⏳ next | see docs/phase-prompts.md |
 
-Last checks (Phase 10): `npx tsc --noEmit` ✅, `npm run lint` ✅, `npm test -- --runInBand` 94/94 ✅,
-iOS simulator build + launch ✅ (iPhone 17 Pro Max). Android not run yet (planned in Phase 15).
+Last checks (Phase 11): `npx tsc --noEmit` ✅, `npm run lint` ✅, `npm test -- --runInBand` 96/96 ✅,
+iOS simulator build + launch ✅ (iPhone 17 Pro Max); manually verified the forced 3s `booking409` rollback,
+same-date sheet recovery, disabled taken slot, and conflict message. Android not run yet (planned in Phase 15).
 
 ## Working rules (keep these)
 - iOS simulator only until ~80–90% done (Mac has limited disk/RAM). Keep Android code correct.
@@ -137,4 +138,4 @@ __tests__/                     App, nativeMocks, tabs, configValidation, mockSer
    git push origin main
    ```
 2. For Phase 10, use the `feat/booking-flow` branch (create it if needed; the screen/UI work is complete).
-3. Continue with Phase 11 from `docs/phase-prompts.md` after committing/merging Phase 10.
+3. Continue with Phase 12 from `docs/phase-prompts.md` after committing/merging Phase 11.

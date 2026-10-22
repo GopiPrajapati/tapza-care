@@ -1,6 +1,13 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { FlatList, ScrollView, View } from 'react-native';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useFocusEffect } from '@react-navigation/native';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -9,6 +16,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { CalendarDays, Clock3, MapPin } from 'lucide-react-native';
+import { trigger } from 'react-native-haptic-feedback';
 
 import {
   clinicDate,
@@ -29,9 +37,11 @@ import PriceText from '../../components/PriceText';
 import PressableScale from '../../components/PressableScale';
 import { SkeletonBox, SkeletonGroup } from '../../components/Skeleton';
 import StickyActionBar from '../../components/StickyActionBar';
+import { useToast } from '../../components/Toast';
 import ScreenContainer from '../../components/ScreenContainer';
 import { useDoctor } from '../../hooks/useDoctors';
 import { useSlotsForDates } from '../../hooks/useSlots';
+import { useCreateBooking } from '../../hooks/useBookings';
 import { useConfig } from '../../hooks/useConfig';
 import type { Slot } from '../../networking/types/models';
 import { Routes, type RootStackScreenProps } from '../../container/Routes';
@@ -69,6 +79,16 @@ function DoctorDetailsScreen({
   const [selectedDate, setSelectedDate] = useState(today);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
   const sheetRef = useRef<BottomSheetModal>(null);
+  const recoveryMessage = useRef<string | null>(null);
+  const handledFailureAt = useRef(0);
+  const { show: showToast } = useToast();
+  const {
+    mutateOnce: submitBooking,
+    isPending: bookingPending,
+    isError: bookingFailed,
+    isSlotTaken,
+    submittedAt,
+  } = useCreateBooking();
   const styles = useThemedStyles(createStyles);
   const { colors, sizes } = useTheme();
 
@@ -121,6 +141,52 @@ function DoctorDetailsScreen({
       setSelectedSlot(null);
     }
   }, [availableNextIndex, dates]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (recoveryMessage.current) {
+        sheetRef.current?.present();
+        showToast({ message: recoveryMessage.current, tone: 'error' });
+        recoveryMessage.current = null;
+      }
+    }, [showToast]),
+  );
+
+  useEffect(() => {
+    if (!bookingFailed || handledFailureAt.current === submittedAt) {
+      return;
+    }
+    handledFailureAt.current = submittedAt;
+    recoveryMessage.current = isSlotTaken
+      ? 'That slot was just taken. Please pick another time.'
+      : 'Booking failed. Please choose a time and try again.';
+    setSelectedSlot(null);
+    trigger('notificationError');
+    navigation.goBack();
+  }, [bookingFailed, isSlotTaken, submittedAt, navigation]);
+
+  const confirmBooking = useCallback(() => {
+    if (!selectedSlot || !doctorId || bookingPending) return;
+    const slot = selectedSlot;
+    const started = submitBooking(
+      { doctorId, slot },
+      { onSuccess: () => trigger('notificationSuccess') },
+    );
+    if (!started) return;
+    navigation.navigate(Routes.BookingSuccess, {
+      bookingId: `pending-${slot.id}`,
+      doctorId,
+      slotId: slot.id,
+      serviceId,
+    });
+  }, [
+    bookingPending,
+    submitBooking,
+    doctorId,
+    navigation,
+    selectedSlot,
+    serviceId,
+  ]);
 
   if (!doctorId) {
     return (
@@ -287,8 +353,9 @@ function DoctorDetailsScreen({
               : formatClinicDay(selectedDate, Date.now())
           }
           buttonLabel="Confirm booking"
-          onPress={() => undefined}
-          disabled={!selectedSlot}
+          onPress={confirmBooking}
+          disabled={!selectedSlot || bookingPending}
+          loading={bookingPending}
         />
       </View>
 

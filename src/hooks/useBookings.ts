@@ -1,8 +1,17 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type MutateOptions,
+} from '@tanstack/react-query';
+import { useCallback, useRef } from 'react';
 
 import { QUERY_KEYS } from '../commonutils/constants';
 import { isSlotTakenError } from '../networking/api/errors';
-import { createBooking, fetchBookings } from '../networking/repositories/bookingRepository';
+import {
+  createBooking,
+  fetchBookings,
+} from '../networking/repositories/bookingRepository';
 import type { Booking, Slot } from '../networking/types/models';
 
 export const useMyBookings = () =>
@@ -19,6 +28,7 @@ interface OptimisticContext {
   previousBookings: Booking[] | undefined;
   previousSlots: Slot[] | undefined;
   slotsKey: readonly string[];
+  slot: Slot;
 }
 
 /** Clinic-local date of a slot ("2026-10-22T09:30:00+05:30" → "2026-10-22"). */
@@ -34,9 +44,16 @@ const slotDate = (slot: Slot) => slot.startsAt.slice(0, 10);
  */
 export function useCreateBooking() {
   const queryClient = useQueryClient();
+  const inFlight = useRef(false);
 
-  const mutation = useMutation<Booking, Error, CreateBookingVariables, OptimisticContext>({
-    mutationFn: ({ doctorId, slot }) => createBooking({ doctorId, slotId: slot.id }),
+  const mutation = useMutation<
+    Booking,
+    Error,
+    CreateBookingVariables,
+    OptimisticContext
+  >({
+    mutationFn: ({ doctorId, slot }) =>
+      createBooking({ doctorId, slotId: slot.id }),
 
     onMutate: async ({ doctorId, slot }) => {
       const slotsKey = QUERY_KEYS.slots(doctorId, slotDate(slot));
@@ -45,7 +62,9 @@ export function useCreateBooking() {
         queryClient.cancelQueries({ queryKey: slotsKey }),
       ]);
 
-      const previousBookings = queryClient.getQueryData<Booking[]>(QUERY_KEYS.bookings);
+      const previousBookings = queryClient.getQueryData<Booking[]>(
+        QUERY_KEYS.bookings,
+      );
       const previousSlots = queryClient.getQueryData<Slot[]>(slotsKey);
       const optimisticId = `pending-${slot.id}`;
 
@@ -62,10 +81,12 @@ export function useCreateBooking() {
         optimistic,
       ]);
       queryClient.setQueryData<Slot[]>(slotsKey, old =>
-        old?.map(item => (item.id === slot.id ? { ...item, available: false } : item)),
+        old?.map(item =>
+          item.id === slot.id ? { ...item, available: false } : item,
+        ),
       );
 
-      return { optimisticId, previousBookings, previousSlots, slotsKey };
+      return { optimisticId, previousBookings, previousSlots, slotsKey, slot };
     },
 
     onSuccess: (booking, _variables, context) => {
@@ -78,17 +99,78 @@ export function useCreateBooking() {
       if (!context) {
         return;
       }
-      queryClient.setQueryData(QUERY_KEYS.bookings, context.previousBookings);
-      if (!isSlotTakenError(error)) {
+      if (context.previousBookings === undefined) {
+        queryClient.setQueryData<Booking[]>(QUERY_KEYS.bookings, old =>
+          old?.filter(booking => booking.id !== context.optimisticId),
+        );
+      } else {
+        queryClient.setQueryData(QUERY_KEYS.bookings, context.previousBookings);
+      }
+      if (isSlotTakenError(error)) {
+        queryClient.setQueryData<Slot[]>(context.slotsKey, old =>
+          (old ?? context.previousSlots ?? [context.slot]).map(item =>
+            item.id === context.slot.id ? { ...item, available: false } : item,
+          ),
+        );
+      } else {
         queryClient.setQueryData(context.slotsKey, context.previousSlots);
       }
     },
 
-    onSettled: (_data, _error, { doctorId }) => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.slotsForDoctor(doctorId) });
+    onSettled: (_data, error, { doctorId }) => {
+      // Preserve the locally unavailable slot after a conflict; a mock forced-409 does not
+      // persist that conflict on the server, so refetching here would make it look free again.
+      if (!isSlotTakenError(error)) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.slotsForDoctor(doctorId),
+        });
+      }
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.bookings });
     },
   });
+  const mutate = mutation.mutate;
 
-  return { ...mutation, isSlotTaken: isSlotTakenError(mutation.error) };
+  const mutateOnce = useCallback(
+    (
+      variables: CreateBookingVariables,
+      options?: MutateOptions<
+        Booking,
+        Error,
+        CreateBookingVariables,
+        OptimisticContext
+      >,
+    ) => {
+      if (inFlight.current) return false;
+      inFlight.current = true;
+      mutate(variables, {
+        ...options,
+        onSuccess: (data, submitted, context, mutationContext) => {
+          inFlight.current = false;
+          options?.onSuccess?.(data, submitted, context, mutationContext);
+        },
+        onError: (error, submitted, context, mutationContext) => {
+          inFlight.current = false;
+          options?.onError?.(error, submitted, context, mutationContext);
+        },
+        onSettled: (data, error, submitted, context, mutationContext) => {
+          inFlight.current = false;
+          options?.onSettled?.(
+            data,
+            error,
+            submitted,
+            context,
+            mutationContext,
+          );
+        },
+      });
+      return true;
+    },
+    [mutate],
+  );
+
+  return {
+    ...mutation,
+    mutateOnce,
+    isSlotTaken: isSlotTakenError(mutation.error),
+  };
 }
