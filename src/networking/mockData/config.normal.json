@@ -48,7 +48,7 @@
       "title": "What do you need today?",
       "background": { "kind": "color", "value": "#FFFFFF" },
       "items": [
-        { "id": "cat-consult", "label": "Consult", "icon": "stethoscope", "action": { "type": "open_doctors" } },
+        { "id": "cat-consult", "label": "Consult", "icon": "stethoscope", "action": { "type": "open_doctors", "specialty": "General Physician" } },
         { "id": "cat-child", "label": "Child care", "icon": "baby", "action": { "type": "open_doctors", "specialty": "Paediatrics" } },
         { "id": "cat-lab", "label": "Lab tests", "icon": "flask-conical", "action": { "type": "coming_soon" } },
         { "id": "cat-pharmacy", "label": "Pharmacy", "icon": "pill", "action": { "type": "coming_soon" } },

@@ -27,8 +27,15 @@ export type SearchBarProps = SearchBarBaseProps &
         value: string;
         onChangeText: (text: string) => void;
         onPress?: undefined;
+        /** Focus the field when it mounts (opens the keyboard). */
+        autoFocus?: boolean;
       }
-    | { onPress: () => void; value?: undefined; onChangeText?: undefined }
+    | {
+        onPress: () => void;
+        value?: undefined;
+        onChangeText?: undefined;
+        autoFocus?: undefined;
+      }
   );
 
 function SearchBar({
@@ -37,6 +44,7 @@ function SearchBar({
   value,
   onChangeText,
   onPress,
+  autoFocus,
 }: SearchBarProps) {
   const { colors, sizes } = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -66,6 +74,9 @@ function SearchBar({
         value={value}
         onChangeText={onChangeText}
         returnKeyType="search"
+        autoFocus={autoFocus}
+        autoCorrect={false}
+        autoCapitalize="none"
         maxFontSizeMultiplier={MAX_FONT_SCALE_DENSE}
         style={[styles.input, styles.flex]}
       />

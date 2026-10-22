@@ -178,7 +178,9 @@ function StickyHomeHeader({ background, onMeasured }: StickyHomeHeaderProps) {
         <View style={styles.search}>
           <SearchBar
             placeholder='Search "Paediatrics"'
-            onPress={() => navigation.navigate(Routes.DoctorList)}
+            onPress={() =>
+              navigation.navigate(Routes.DoctorList, { focusSearch: true })
+            }
             rightSlot={
               <BookPill
                 onPress={() => navigation.navigate(Routes.DoctorList)}

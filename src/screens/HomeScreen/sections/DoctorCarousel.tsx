@@ -1,11 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 
-import {
-  formatClinicDay,
-  formatClinicTime,
-  formatInr,
-} from '../../../commonutils/helpers';
+import { formatInr } from '../../../commonutils/helpers';
 import {
   useTheme,
   useThemedStyles,
@@ -13,13 +9,12 @@ import {
 } from '../../../commonutils/theme';
 import AppText from '../../../components/AppText';
 import Avatar from '../../../components/Avatar';
-import Badge from '../../../components/Badge';
 import Button from '../../../components/Button';
 import Card from '../../../components/Card';
+import NextSlotBadge from '../../../components/NextSlotBadge';
 import PriceText from '../../../components/PriceText';
 import SectionHeader from '../../../components/SectionHeader';
 import {
-  SkeletonBox,
   SkeletonCircle,
   SkeletonGroup,
   SkeletonText,
@@ -27,7 +22,6 @@ import {
 import { Routes } from '../../../container/Routes';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import { useDoctors } from '../../../hooks/useDoctors';
-import { useNextSlot } from '../../../hooks/useNextSlot';
 import type { DoctorCarouselSection } from '../../../networking/types/configSchema';
 import type { Doctor } from '../../../networking/types/models';
 
@@ -118,29 +112,11 @@ const DoctorCard = memo(function DoctorCardView({
       </AppText>
       <View style={styles.cardBottom}>
         <PriceText amount={doctor.feeInr} />
-        <NextSlot doctorId={doctor.id} />
+        <NextSlotBadge doctorId={doctor.id} />
       </View>
     </Card>
   );
 });
-
-function NextSlot({ doctorId }: { doctorId: string }) {
-  const { typography } = useTheme();
-  const { slot, isLoading } = useNextSlot(doctorId);
-  if (isLoading) {
-    return <SkeletonBox width="45%" height={typography.caption.lineHeight} />;
-  }
-  if (!slot) {
-    return <Badge label="Fully booked" tone="neutral" />;
-  }
-  const day = formatClinicDay(slot.startsAt.slice(0, 10), Date.now());
-  return (
-    <Badge
-      label={`${day}, ${formatClinicTime(slot.startsAt)}`}
-      tone="success"
-    />
-  );
-}
 
 function DoctorCardsSkeleton() {
   const styles = useThemedStyles(createStyles);
