@@ -268,3 +268,24 @@ sticky action bar, fix the sticky bar safe-area strip and toast overlap. Confirm
 **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (8 suites, 94 tests), and
 `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched successfully).
 **Rejected:** confirmation/navigation and booking mutation remain out of this phase; Phase 11 owns them.
+
+## Phase 11 — Booking confirmation and bookings list
+**Prompt:** Confirm optimistically inserts a pending booking and opens BookingSuccess immediately; reconcile the
+POST response live, recover a failed/409 slot selection, prevent duplicate submissions, and implement My Bookings
+with upcoming/past, loading, empty, and retry states. Add booking-state tests; verify with 3s latency and forced 409.
+**Decisions:**
+- TanStack Query remains the booking source of truth. `useCreateBooking` inserts a pending item immediately,
+  reconciles it to the returned confirmed booking, and removes it on failure. A 409 keeps that selected slot
+  unavailable in the cache; the optimistic booking disappears.
+- An in-flight guard prevents rapid duplicate submits, in addition to disabling the action while pending. The
+  success screen receives IDs and resolves live query state, so the pending → confirmed status updates in place.
+- BookingSuccess uses the small local Lottie asset, with a Reanimated checkmark fallback if Lottie fails or
+  Reduce Motion is enabled. Success/error haptics match the mutation outcome.
+- Failed booking returns to DoctorDetails with the original date, sheet open, chosen slot cleared, and a visible
+  conflict/retry message. The 409 test uses the mock control's `booking409` failure and asserts the slot is taken.
+- My Bookings groups by upcoming/past and uses existing shared theme components for status, loading, empty, and
+  error states. No new dependencies or backend were added.
+**Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (9 suites, 96 tests), and
+`npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (build + launch). On iPhone 17 Pro Max with
+`failure=booking409` and `latency=3000`, confirmed pending success UI followed by rollback to the same date,
+sheet reopened, unavailable slot disabled, and exact conflict toast. Mock controls were restored to defaults.

@@ -42,7 +42,12 @@ export type RootStackParamList = {
     | undefined;
   [Routes.DoctorDetails]: { doctorId: string; serviceId?: string };
   [Routes.ServiceList]: undefined;
-  [Routes.BookingSuccess]: { bookingId: string };
+  [Routes.BookingSuccess]: {
+    bookingId: string;
+    doctorId: string;
+    slotId: string;
+    serviceId?: string;
+  };
   [Routes.PrescriptionDetails]: { prescriptionId: string };
   [Routes.AdminSettings]: undefined;
 };
