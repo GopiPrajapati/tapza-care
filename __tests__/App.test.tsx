@@ -9,7 +9,9 @@ jest.mock('../src/container/queryClient', () => {
   const { QueryClient } = jest.requireActual('@tanstack/react-query');
   return {
     createQueryClient: () =>
-      new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } }),
+      new QueryClient({
+        defaultOptions: { queries: { retry: false, gcTime: Infinity } },
+      }),
   };
 });
 
@@ -17,12 +19,13 @@ beforeEach(() => {
   useMockControlsStore.setState({ latencyMs: 0, failure: 'none' });
 });
 
-test('opens on the Home tab with the tabs from config', async () => {
+test('opens on the config-driven Home with the tabs from config', async () => {
   const { unmount } = await render(<App />);
 
-  expect(
-    await screen.findByText('Config-driven home with sections goes here.'),
-  ).toBeTruthy();
+  // Hero and quick actions from config.normal.json; the unknown "video_reel" section is skipped.
+  expect(await screen.findByText('Your doctor, close to home')).toBeTruthy();
+  expect(screen.getByText('Prescriptions')).toBeTruthy();
+  expect(screen.queryByText(/Health tips/)).toBeNull();
   for (const label of ['Home', 'Bookings', 'Medicines', 'Profile']) {
     expect(screen.getByRole('button', { name: label })).toBeTruthy();
   }

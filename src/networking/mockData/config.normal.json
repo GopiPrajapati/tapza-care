@@ -19,7 +19,7 @@
     {
       "id": "sec-hero",
       "type": "hero_banner",
-      "background": { "kind": "gradient", "value": "#0F766E,#14B8A6" },
+      "background": { "kind": "gradient", "value": "#0F766E,#115E59" },
       "items": [
         {
           "id": "hero-1",

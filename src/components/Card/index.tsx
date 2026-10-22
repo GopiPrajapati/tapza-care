@@ -1,7 +1,11 @@
 import React from 'react';
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { useThemedStyles, type Theme } from '../../commonutils/theme';
+import {
+  SurfaceTone,
+  useThemedStyles,
+  type Theme,
+} from '../../commonutils/theme';
 import PressableScale from '../PressableScale';
 
 interface CardBaseProps {
@@ -44,11 +48,15 @@ function Card({
         scaleTo={0.98}
         style={cardStyle}
       >
-        {children}
+        <SurfaceTone>{children}</SurfaceTone>
       </PressableScale>
     );
   }
-  return <View style={cardStyle}>{children}</View>;
+  return (
+    <View style={cardStyle}>
+      <SurfaceTone>{children}</SurfaceTone>
+    </View>
+  );
 }
 
 const createStyles = ({ colors, radii, spacing, elevation, sizes }: Theme) => ({
