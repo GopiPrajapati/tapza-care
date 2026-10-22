@@ -29,12 +29,17 @@ function HomeHeader() {
   return (
     <View style={styles.row}>
       <View style={styles.texts}>
-        <View style={styles.eta} accessible accessibilityRole="header">
+        <PressableScale
+          accessibilityLabel="Clinic visit ETA"
+          accessibilityHint="Long press to open developer settings"
+          onLongPress={() => navigation.navigate(Routes.AdminSettings)}
+          style={styles.eta}
+        >
           <Zap size={sizes.iconLg} color={ink} fill={ink} />
           <AppText variant="title">
             Clinic visit in {CLINIC_VISIT_ETA_MINUTES} min
           </AppText>
-        </View>
+        </PressableScale>
         <View style={styles.location}>
           <MapPin size={sizes.iconSm} color={ink} />
           <AppText variant="bodyStrong">{PATIENT.firstName}</AppText>

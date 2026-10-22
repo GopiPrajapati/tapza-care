@@ -44,6 +44,8 @@ export const QUERY_KEYS = {
 /** Mock signed-in patient (no auth in this assignment). */
 export const PATIENT = {
   firstName: 'Gopi',
+  fullName: 'Gopi Prajapati',
+  phone: '+91 98765 43210',
   locality: 'Kondapur, Hyderabad',
 } as const;
 
