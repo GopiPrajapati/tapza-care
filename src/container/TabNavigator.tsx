@@ -10,6 +10,8 @@ import {
 } from 'lucide-react-native';
 
 import { DEFAULT_TABS } from '../commonutils/constants';
+import { useTheme } from '../commonutils/theme';
+import { useConfig } from '../hooks/useConfig';
 import type { TabConfig, TabScreen } from '../networking/types/layoutConfig';
 import HomeScreen from '../screens/HomeScreen';
 import MyBookingsScreen from '../screens/MyBookingsScreen';
@@ -89,16 +91,24 @@ export function resolveTabs(tabs: TabConfig[]): ResolvedTab[] {
     : resolveTabs(DEFAULT_TABS);
 }
 
-interface TabNavigatorProps {
-  /** Comes from config.tabs once the config is wired in. */
-  tabs?: TabConfig[];
-}
+function TabNavigator() {
+  const { config } = useConfig();
+  const { colors } = useTheme();
+  const resolved = useMemo(() => resolveTabs(config.tabs), [config.tabs]);
 
-function TabNavigator({ tabs = DEFAULT_TABS }: TabNavigatorProps) {
-  const resolved = useMemo(() => resolveTabs(tabs), [tabs]);
+  const screenOptions = useMemo(
+    () => ({
+      headerShown: false,
+      tabBarActiveTintColor: colors.primaryText,
+      tabBarInactiveTintColor: colors.textSecondary,
+      tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+      tabBarAllowFontScaling: true,
+    }),
+    [colors],
+  );
 
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator screenOptions={screenOptions}>
       {resolved.map(({ id, label, route, component, renderIcon }) => (
         <Tab.Screen
           key={id}

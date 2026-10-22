@@ -1,0 +1,258 @@
+{
+  "version": 0,
+  "theme": {
+    "primary": "#0F766E",
+    "secondary": "#0E7490",
+    "background": "#F4F7F6",
+    "surface": "#FFFFFF",
+    "textPrimary": "#0F172A",
+    "textSecondary": "#475569",
+    "accent": "#F59E0B"
+  },
+  "tabs": [
+    {
+      "id": "tab-home",
+      "label": "Home",
+      "icon": "home",
+      "screen": "home"
+    },
+    {
+      "id": "tab-bookings",
+      "label": "Bookings",
+      "icon": "calendar",
+      "screen": "bookings"
+    },
+    {
+      "id": "tab-prescriptions",
+      "label": "Medicines",
+      "icon": "pill",
+      "screen": "prescriptions"
+    },
+    {
+      "id": "tab-profile",
+      "label": "Profile",
+      "icon": "user",
+      "screen": "profile"
+    }
+  ],
+  "sections": [
+    {
+      "id": "sec-hero",
+      "type": "hero_banner",
+      "background": {
+        "kind": "gradient",
+        "value": "#0F766E,#14B8A6"
+      },
+      "items": [
+        {
+          "id": "hero-1",
+          "title": "Your doctor, close to home",
+          "subtitle": "Book a visit at Tapza Clinic, Kondapur in under a minute",
+          "imageKey": "home/hero-normal",
+          "ctaLabel": "Book a visit",
+          "action": {
+            "type": "open_doctors"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sec-quick",
+      "type": "quick_actions",
+      "background": {
+        "kind": "color",
+        "value": "#E6F4F1"
+      },
+      "items": [
+        {
+          "id": "qa-book",
+          "label": "Book",
+          "icon": "calendar-plus",
+          "action": {
+            "type": "open_doctors"
+          }
+        },
+        {
+          "id": "qa-rx",
+          "label": "Prescriptions",
+          "icon": "file-text",
+          "action": {
+            "type": "open_prescriptions"
+          }
+        },
+        {
+          "id": "qa-remind",
+          "label": "Reminders",
+          "icon": "bell",
+          "action": {
+            "type": "open_reminders"
+          }
+        },
+        {
+          "id": "qa-family",
+          "label": "Family",
+          "icon": "users",
+          "action": {
+            "type": "open_family"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sec-categories",
+      "type": "category_chips",
+      "title": "What do you need today?",
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
+      "items": [
+        {
+          "id": "cat-consult",
+          "label": "Consult",
+          "icon": "stethoscope",
+          "action": {
+            "type": "open_doctors"
+          }
+        },
+        {
+          "id": "cat-child",
+          "label": "Child care",
+          "icon": "baby",
+          "action": {
+            "type": "open_doctors",
+            "specialty": "Paediatrics"
+          }
+        },
+        {
+          "id": "cat-lab",
+          "label": "Lab tests",
+          "icon": "flask-conical",
+          "action": {
+            "type": "coming_soon"
+          }
+        },
+        {
+          "id": "cat-pharmacy",
+          "label": "Pharmacy",
+          "icon": "pill",
+          "action": {
+            "type": "coming_soon"
+          }
+        },
+        {
+          "id": "cat-vaccines",
+          "label": "Vaccines",
+          "icon": "syringe",
+          "action": {
+            "type": "coming_soon"
+          }
+        },
+        {
+          "id": "cat-checkup",
+          "label": "Health checkups",
+          "icon": "heart-pulse",
+          "action": {
+            "type": "coming_soon"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sec-doctors",
+      "type": "doctor_carousel",
+      "title": "Doctors available today",
+      "background": {
+        "kind": "color",
+        "value": "#EEF6FF"
+      },
+      "items": [
+        {
+          "doctorId": "doc-1"
+        },
+        {
+          "doctorId": "doc-3"
+        },
+        {
+          "doctorId": "doc-6"
+        },
+        {
+          "doctorId": "doc-2"
+        },
+        {
+          "doctorId": "doc-4"
+        }
+      ]
+    },
+    {
+      "id": "sec-services",
+      "type": "service_grid",
+      "title": "Popular consultations",
+      "columns": 3,
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
+      "items": [
+        {
+          "id": "svc-gp",
+          "name": "General consultation",
+          "priceInr": 500,
+          "imageKey": "services/general",
+          "badge": "Most booked",
+          "doctorId": "doc-1"
+        },
+        {
+          "id": "svc-child",
+          "name": "Child consultation",
+          "priceInr": 600,
+          "imageKey": "services/child",
+          "doctorId": "doc-3"
+        },
+        {
+          "id": "svc-skin",
+          "name": "Skin & hair",
+          "priceInr": 700,
+          "imageKey": "services/skin",
+          "doctorId": "doc-4"
+        },
+        {
+          "id": "svc-sugar",
+          "name": "Diabetes review",
+          "priceInr": 650,
+          "imageKey": "services/diabetes",
+          "doctorId": "doc-6"
+        },
+        {
+          "id": "svc-heart",
+          "name": "Heart consultation",
+          "priceInr": 1200,
+          "imageKey": "services/heart",
+          "doctorId": "doc-5"
+        },
+        {
+          "id": "svc-ent",
+          "name": "Ear, nose & throat",
+          "priceInr": 550,
+          "imageKey": "services/ent",
+          "doctorId": "doc-8"
+        }
+      ]
+    },
+    {
+      "id": "sec-offer",
+      "type": "offer_strip",
+      "background": {
+        "kind": "color",
+        "value": "#FEF3C7"
+      },
+      "items": [
+        {
+          "id": "offer-1",
+          "message": "Free follow-up within 7 days of your visit",
+          "icon": "badge-check"
+        }
+      ]
+    }
+  ]
+}

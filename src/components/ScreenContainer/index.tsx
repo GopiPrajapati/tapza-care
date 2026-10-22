@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { Edge, SafeAreaView } from 'react-native-safe-area-context';
 
+import { useTheme } from '../../commonutils/theme';
+
 export interface ScreenContainerProps {
   children: React.ReactNode;
   /** Safe-area edges to pad. Defaults to all four. */
@@ -10,8 +12,11 @@ export interface ScreenContainerProps {
 }
 
 function ScreenContainer({ children, edges, style }: ScreenContainerProps) {
+  const { colors } = useTheme();
   return (
-    <SafeAreaView edges={edges} style={[styles.container, style]}>
+    <SafeAreaView
+      edges={edges}
+      style={[styles.container, { backgroundColor: colors.background }, style]}>
       {children}
     </SafeAreaView>
   );

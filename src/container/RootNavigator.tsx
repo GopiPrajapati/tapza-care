@@ -1,7 +1,12 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useMemo } from 'react';
+import {
+  DefaultTheme,
+  NavigationContainer,
+  type Theme as NavigationTheme,
+} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { useTheme } from '../commonutils/theme';
 import AdminSettingsScreen from '../screens/AdminSettingsScreen';
 import BookingSuccessScreen from '../screens/BookingSuccessScreen';
 import DoctorDetailsScreen from '../screens/DoctorDetailsScreen';
@@ -14,8 +19,27 @@ import TabNavigator from './TabNavigator';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  const { colors } = useTheme();
+
+  // Headers, tab bar and screen backgrounds follow the config theme.
+  const navigationTheme = useMemo<NavigationTheme>(
+    () => ({
+      ...DefaultTheme,
+      colors: {
+        ...DefaultTheme.colors,
+        primary: colors.primaryText,
+        background: colors.background,
+        card: colors.surface,
+        text: colors.textPrimary,
+        border: colors.border,
+        notification: colors.danger,
+      },
+    }),
+    [colors],
+  );
+
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navigationTheme}>
       <Stack.Navigator
         initialRouteName={Routes.MainTabs}
         // Chevron only: the previous route's name (e.g. "MainTabs") is not a useful back label.
