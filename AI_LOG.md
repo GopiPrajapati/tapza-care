@@ -197,3 +197,34 @@ error and stale states, both configs distinct. Tests for ServiceGrid and unknown
 were restored to keep the commit focused.
 **Known gaps (later phases):** search bar opens the doctor list (no search screen yet); "See all" for services
 and the Book pill both go to the doctor list.
+
+## Phase 8 — Home motion (Zepto feel)
+**Prompt:** collapsing header with pinned search and band-coloured background, hero parallax, one-time section
+entry, back-to-top pill, floating bar hide/show, cross-fade on config switch, reduce-motion support, all on the
+UI thread. The user also shared a Zepto screen recording; frames were extracted and studied.
+**What the Zepto video shows (and we copied):** the address/ETA row slides up and fades; the search bar rises and
+pins under the status bar; the band colour stays behind the search bar while collapsing, then the header and the
+status-bar strip turn white once pinned (that is the "safe area comes back" effect); scrolling back to the top
+reverses it.
+**Decisions:**
+- `StickyHomeHeader` floats over the list (absolute). Its height, background (`interpolateColor` band → surface),
+  ETA fade/scale and the pin all derive from one `scrollY` shared value (`useAnimatedScrollHandler`), so no JS runs
+  per frame. The top band reserves the measured header height as padding.
+- Status-bar icons switch between band style and theme style via a focused `<StatusBar>` element, flipped once
+  when crossing the pin point (`useAnimatedReaction` → `scheduleOnRN`), not per frame.
+- Hero parallax (0.35× rate, fade) and overscroll stretch; an `OverscrollFill` paints the band colour above the
+  list during iOS bounce.
+- Section entry: `onViewableItemsChanged` marks ids in a shared map; `EntryAnimated` fades/slides 14pt once.
+  Seen sections stay visible on scroll-back and after list recycling.
+- Back-to-top: prompt said ~1.5 screens, but home is ~2 screens tall so it could never show; uses 0.6 screens.
+  First version mounted with a layout `entering` animation and never appeared on iOS; replaced with a pill whose
+  opacity/offset follow `scrollY` on the UI thread (state only toggles touchability).
+- Dose bar hides on scroll down past the header and returns on scroll up or at the top (6pt jitter threshold).
+- Config switch remounts the home content (keyed by version + theme + section ids) with a 320ms fade.
+- Reduce Motion (`useReducedMotion`) disables parallax, entry animation, content fade and scroll-to-top animation.
+- Bugs found and fixed while testing: a JS helper (`withAlpha`) called inside a worklet crashed on the UI thread
+  (colours now computed on JS first); the list was gated on header measurement, which never happens in Jest.
+**Not done (honest):** Perf Monitor FPS profiling and the Android release build were not run (iOS-only testing
+for now, per the user's disk/RAM limits). `getItemLayout` not used: section heights depend on config and font
+scale, so fixed heights would be wrong.
+**Rejected:** a JS `onScroll` listener for the header (would run per frame on the JS thread).
