@@ -5,6 +5,7 @@ import { ChevronLeft } from 'lucide-react-native';
 import { useTheme, useThemedStyles, type Theme } from '../../commonutils/theme';
 import AppText from '../AppText';
 import PressableScale from '../PressableScale';
+import { useTranslation } from 'react-i18next';
 
 export interface HeaderProps {
   title: string;
@@ -18,12 +19,13 @@ export interface HeaderProps {
 function Header({ title, subtitle, onBackPress, right }: HeaderProps) {
   const { colors, sizes } = useTheme();
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
 
   return (
     <View style={styles.row}>
       {onBackPress ? (
         <PressableScale
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('back')}
           onPress={onBackPress}
           style={styles.back}
         >

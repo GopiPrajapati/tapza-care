@@ -8,15 +8,11 @@ import { Routes } from '../../../container/Routes';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import { useNextDose } from '../../../hooks/useNextDose';
 import { useDoseLogStore } from '../../../store/doseLogStore';
-
-const TIMING_LABELS = {
-  morning: 'Morning',
-  afternoon: 'Afternoon',
-  night: 'Night',
-} as const;
+import { useTranslation } from 'react-i18next';
 
 /** Floating "Next dose" bar above the tab bar; hidden when every dose for today is taken. */
 function NextDoseBar() {
+  const { t } = useTranslation();
   const dose = useNextDose();
   const markTaken = useDoseLogStore(state => state.markTaken);
   const unmark = useDoseLogStore(state => state.unmark);
@@ -31,20 +27,20 @@ function NextDoseBar() {
   return (
     <FloatingBar
       icon={Pill}
-      title={`Next dose: ${medicine.name}`}
-      subtitle={`${TIMING_LABELS[timing]} · ${formatMinutesOfDay(
-        dueAtMinutes,
-      )} · ${medicine.dose}`}
+      title={t('nextDose', { medicine: medicine.name })}
+      subtitle={`${t(timing)} · ${formatMinutesOfDay(dueAtMinutes)} · ${
+        medicine.dose
+      }`}
       onPress={() =>
         navigation.navigate(Routes.PrescriptionDetails, { prescriptionId })
       }
-      actionLabel="Mark taken"
+      actionLabel={t('markTaken')}
       onAction={() => {
         markTaken(dose);
         toast.show({
-          message: `${medicine.name} marked taken`,
+          message: t('doseMarked', { medicine: medicine.name }),
           tone: 'success',
-          actionLabel: 'Undo',
+          actionLabel: t('undo'),
           onAction: () => unmark(dose),
         });
       }}

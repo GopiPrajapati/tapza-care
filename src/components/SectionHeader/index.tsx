@@ -11,6 +11,7 @@ import {
 } from '../../commonutils/theme';
 import AppText from '../AppText';
 import PressableScale from '../PressableScale';
+import { useTranslation } from 'react-i18next';
 
 export interface SectionHeaderProps {
   title: string;
@@ -25,12 +26,14 @@ function SectionHeader({
   title,
   subtitle,
   onSeeAll,
-  seeAllLabel = 'See all',
+  seeAllLabel,
 }: SectionHeaderProps) {
   const { colors, sizes, spacing } = useTheme();
   const styles = useThemedStyles(createStyles);
   const tone = useTone();
   const linkColor = tone?.accent ?? colors.primaryText;
+  const { t } = useTranslation();
+  const seeAllText = seeAllLabel ?? t('seeAll');
 
   return (
     <View style={styles.wrapper}>
@@ -54,12 +57,12 @@ function SectionHeader({
         {onSeeAll ? (
           <PressableScale
             accessibilityRole="link"
-            accessibilityLabel={`${seeAllLabel}: ${title}`}
+            accessibilityLabel={`${seeAllText}: ${title}`}
             onPress={onSeeAll}
             style={styles.seeAll}
           >
             <AppText variant="label" style={{ color: linkColor }}>
-              {seeAllLabel}
+              {seeAllText}
             </AppText>
             <ChevronRight size={sizes.iconSm} color={linkColor} />
           </PressableScale>

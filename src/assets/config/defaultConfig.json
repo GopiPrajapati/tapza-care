@@ -7,7 +7,16 @@
     "surface": "#FFFFFF",
     "textPrimary": "#0F172A",
     "textSecondary": "#475569",
-    "accent": "#F59E0B"
+    "accent": "#F59E0B",
+    "dark": {
+      "primary": "#2DD4BF",
+      "secondary": "#38BDF8",
+      "background": "#101817",
+      "surface": "#1C2927",
+      "textPrimary": "#F1F5F9",
+      "textSecondary": "#B8C7C4",
+      "accent": "#FBBF24"
+    }
   },
   "tabs": [
     {

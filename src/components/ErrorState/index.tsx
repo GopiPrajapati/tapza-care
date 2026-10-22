@@ -6,6 +6,7 @@ import { useThemedStyles, type Theme } from '../../commonutils/theme';
 import AppText from '../AppText';
 import Button from '../Button';
 import Illustration from '../EmptyState/Illustration';
+import { useTranslation } from 'react-i18next';
 
 export interface ErrorStateProps {
   title?: string;
@@ -15,25 +16,21 @@ export interface ErrorStateProps {
   retrying?: boolean;
 }
 
-function ErrorState({
-  title = 'Something went wrong',
-  message = 'Please check your connection and try again.',
-  onRetry,
-  retrying,
-}: ErrorStateProps) {
+function ErrorState({ title, message, onRetry, retrying }: ErrorStateProps) {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   return (
     <View style={styles.center} accessibilityRole="alert">
       <Illustration name="error" />
       <AppText variant="heading" align="center">
-        {title}
+        {title ?? t('errorTitle')}
       </AppText>
       <AppText color="textSecondary" align="center">
-        {message}
+        {message ?? t('errorMessage')}
       </AppText>
       {onRetry ? (
         <Button
-          label="Try again"
+          label={t('retry')}
           icon={RotateCw}
           onPress={onRetry}
           loading={retrying}

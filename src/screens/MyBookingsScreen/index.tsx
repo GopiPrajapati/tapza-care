@@ -17,6 +17,7 @@ import { Routes, type TabScreenProps } from '../../container/Routes';
 import { useMyBookings } from '../../hooks/useBookings';
 import { useDoctors } from '../../hooks/useDoctors';
 import type { Booking, Doctor } from '../../networking/types/models';
+import { useTranslation } from 'react-i18next';
 
 type BookingFilter = 'upcoming' | 'past';
 
@@ -24,6 +25,7 @@ function MyBookingsScreen({
   navigation,
 }: TabScreenProps<typeof Routes.Bookings>) {
   const [filter, setFilter] = useState<BookingFilter>('upcoming');
+  const { t } = useTranslation();
   const bookingsQuery = useMyBookings();
   const doctorsQuery = useDoctors();
   const styles = useThemedStyles(createStyles);
@@ -56,7 +58,7 @@ function MyBookingsScreen({
     return (
       <ScreenContainer edges={['top', 'left', 'right']}>
         <ErrorState
-          title="Couldn’t load your bookings"
+          title={t('bookingsError')}
           onRetry={() => bookingsQuery.refetch()}
           retrying={bookingsQuery.isFetching}
         />
@@ -72,34 +74,32 @@ function MyBookingsScreen({
       <View style={styles.screen}>
         <View style={styles.header}>
           <AppText variant="heading" accessibilityRole="header">
-            My bookings
+            {t('myBookings')}
           </AppText>
-          <AppText color="textSecondary">
-            Your clinic visits at a glance
-          </AppText>
+          <AppText color="textSecondary">{t('myClinicVisits')}</AppText>
         </View>
         <View style={styles.filters}>
           <Chip
-            label="Upcoming"
+            label={t('upcoming')}
             selected={filter === 'upcoming'}
             onPress={() => setFilter('upcoming')}
           />
           <Chip
-            label="Past"
+            label={t('past')}
             selected={filter === 'past'}
             onPress={() => setFilter('past')}
           />
         </View>
         {filteredBookings.length === 0 ? (
           <EmptyState
-            title={trulyEmpty ? 'No bookings yet' : `No ${filter} bookings`}
-            message={
+            title={
               trulyEmpty
-                ? 'Book a doctor and your appointments will appear here.'
-                : 'Try the other tab to see your appointments.'
+                ? t('noBookings')
+                : t('noFilterBookings', { filter: t(filter) })
             }
+            message={trulyEmpty ? t('bookDoctorPrompt') : t('otherBookingsTab')}
             illustration="bookings"
-            actionLabel="Book a doctor"
+            actionLabel={t('bookADoctor')}
             onAction={() => navigation.navigate(Routes.DoctorList)}
           />
         ) : (
@@ -126,7 +126,7 @@ function MyBookingsScreen({
             color="textSecondary"
             style={styles.doctorDataNote}
           >
-            Doctor details are temporarily unavailable.
+            {t('doctorDataUnavailable')}
           </AppText>
         ) : null}
       </View>
@@ -141,6 +141,7 @@ function BookingCard({
   booking: Booking;
   doctor?: Doctor;
 }) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(createStyles);
   const { colors } = useTheme();
   const confirmed = booking.status === 'confirmed';
@@ -152,18 +153,19 @@ function BookingCard({
       <View
         style={styles.cardTop}
         accessible
-        accessibilityLabel={`${
-          doctor?.name ?? 'Doctor appointment'
-        }, ${date}, ${formatClinicTime(booking.startsAt)}, ${
-          confirmed ? 'confirmed' : 'pending'
-        }`}
+        accessibilityLabel={t('bookingCardAccessibility', {
+          doctor: doctor?.name ?? t('doctorAppointment'),
+          date,
+          time: formatClinicTime(booking.startsAt),
+          status: confirmed ? t('confirmed') : t('pending'),
+        })}
       >
         {doctor ? (
           <Avatar name={doctor.name} image={doctor.photoUrl} size="md" />
         ) : null}
         <View style={styles.doctorInfo}>
           <AppText variant="bodyStrong">
-            {doctor?.name ?? 'Doctor appointment'}
+            {doctor?.name ?? t('doctorAppointment')}
           </AppText>
           {doctor ? (
             <AppText variant="caption" color="textSecondary">
@@ -172,7 +174,7 @@ function BookingCard({
           ) : null}
         </View>
         <Badge
-          label={confirmed ? 'Confirmed' : 'Pending'}
+          label={confirmed ? t('confirmed') : t('pending')}
           tone={confirmed ? 'success' : 'warning'}
         />
       </View>
@@ -201,10 +203,11 @@ function BookingCard({
 
 function BookingsSkeleton() {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   return (
     <SkeletonGroup
       style={styles.skeleton}
-      accessibilityLabel="Loading bookings"
+      accessibilityLabel={t('loadingBookings')}
     >
       <SkeletonBox height={34} width={180} />
       <View style={styles.filters}>

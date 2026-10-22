@@ -15,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme, useThemedStyles, type Theme } from '../../commonutils/theme';
+import { useTranslation } from 'react-i18next';
 
 const DIM_OPACITY = 0.45;
 
@@ -46,7 +47,7 @@ function usePulse() {
 /** Wrap a skeleton layout so every block pulses together. Hidden from screen readers. */
 export function SkeletonGroup({
   children,
-  accessibilityLabel = 'Loading',
+  accessibilityLabel,
   style,
 }: {
   children: React.ReactNode;
@@ -54,13 +55,14 @@ export function SkeletonGroup({
   style?: StyleProp<ViewStyle>;
 }) {
   const opacity = usePulse();
+  const { t } = useTranslation();
   return (
     <PulseContext.Provider value={opacity}>
       <View
         style={style}
         accessible
         accessibilityRole="progressbar"
-        accessibilityLabel={accessibilityLabel}
+        accessibilityLabel={accessibilityLabel ?? t('loading')}
       >
         {children}
       </View>

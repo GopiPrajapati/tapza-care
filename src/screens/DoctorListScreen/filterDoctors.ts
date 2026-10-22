@@ -1,4 +1,5 @@
 import type { Doctor } from '../../networking/types/models';
+import { translateContent } from '../../i18n';
 
 /** Lower-case, trimmed, accents removed: so "dermatology " matches "Dermatology". */
 const normalise = (value: string) =>
@@ -19,7 +20,9 @@ export function filterDoctors(
   query: string,
   specialty: string | null,
 ): Doctor[] {
-  const queryWords = normalise(query).split(/\s+/).filter(Boolean);
+  const queryWords = normalise(query)
+    .split(/[\s,./&()-]+/)
+    .filter(Boolean);
   return doctors.filter(doctor => {
     if (specialty && doctor.specialty !== specialty) {
       return false;
@@ -28,12 +31,14 @@ export function filterDoctors(
       [
         doctor.name,
         doctor.specialty,
+        translateContent(doctor.specialty),
         doctor.clinicName ?? '',
         ...doctor.languages,
+        ...doctor.languages.map(translateContent),
       ].join(' '),
-    ).split(/[^a-z0-9]+/);
+    ).split(/[\s,./&()-]+/);
     return queryWords.every(word => {
-      const term = word.replace(/[^a-z0-9]/g, '');
+      const term = word;
       return (
         term === '' || doctorWords.some(candidate => candidate.startsWith(term))
       );

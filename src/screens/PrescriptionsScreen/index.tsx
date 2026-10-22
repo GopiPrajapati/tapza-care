@@ -26,11 +26,13 @@ import type { Prescription } from '../../networking/types/models';
 import { doseKey, useDoseLogStore } from '../../store/doseLogStore';
 import { usePrescriptions } from '../../hooks/usePrescriptions';
 import { isCourseActive } from '../../hooks/useNextDose';
+import { useTranslation } from 'react-i18next';
 
 function PrescriptionsScreen({
   navigation,
 }: TabScreenProps<typeof Routes.Prescriptions>) {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const query = usePrescriptions();
   const taken = useDoseLogStore(state => state.taken);
@@ -75,8 +77,8 @@ function PrescriptionsScreen({
     return (
       <ScreenContainer edges={['top', 'left', 'right']}>
         <EmptyState
-          title="No prescriptions yet"
-          message="Your doctor's prescriptions will appear here after a visit."
+          title={t('noPrescriptions')}
+          message={t('prescriptionsEmpty')}
           illustration="generic"
         />
       </ScreenContainer>
@@ -101,10 +103,10 @@ function PrescriptionsScreen({
         ListHeaderComponent={
           <View style={styles.header}>
             <AppText variant="title" accessibilityRole="header">
-              Prescriptions
+              {t('prescriptionsTitle')}
             </AppText>
             <AdherenceCard taken={adherence.taken} total={adherence.total} />
-            <AppText variant="heading">Your prescriptions</AppText>
+            <AppText variant="heading">{t('prescriptionsTitle')}</AppText>
           </View>
         }
         renderItem={({ item }) => (
@@ -133,6 +135,7 @@ function PrescriptionSeparator() {
 function AdherenceCard({ taken, total }: { taken: number; total: number }) {
   const styles = useThemedStyles(createStyles);
   const { colors, sizes } = useTheme();
+  const { t } = useTranslation();
   const diameter = sizes.avatarLg;
   const stroke = sizes.border + 3;
   const radius = (diameter - stroke) / 2;
@@ -142,19 +145,19 @@ function AdherenceCard({ taken, total }: { taken: number; total: number }) {
   return (
     <Card elevated={false} style={styles.adherenceCard}>
       <View style={styles.adherenceCopy}>
-        <AppText variant="heading">Today’s adherence</AppText>
+        <AppText variant="heading">{t('todayAdherence')}</AppText>
         <AppText color="textSecondary">
-          {taken} of {total} doses taken today
+          {t('dosesTaken', { taken, total })}
         </AppText>
         {total === 0 ? (
           <AppText variant="caption" color="textSecondary">
-            No doses scheduled today
+            {t('noDosesToday')}
           </AppText>
         ) : null}
       </View>
       <View
         style={{ width: diameter, height: diameter }}
-        accessibilityLabel={`${taken} of ${total} doses taken today`}
+        accessibilityLabel={t('dosesTaken', { taken, total })}
         accessibilityRole="image"
       >
         <Svg width={diameter} height={diameter}>
@@ -198,6 +201,7 @@ function PrescriptionCard({
   today: string;
   onPress: () => void;
 }) {
+  const { t } = useTranslation();
   const styles = useThemedStyles(createStyles);
   const { colors, sizes } = useTheme();
   const active = prescription.medicines.some(medicine =>
@@ -209,12 +213,17 @@ function PrescriptionCard({
     ...prescription.medicines.map(medicine => medicine.days),
   );
   const completed = daysBetween(issuedDate, today) >= longestCourse;
-  const status = active && !completed ? 'Active' : 'Completed';
+  const isActive = active && !completed;
+  const status = isActive ? t('active') : t('completed');
 
   return (
     <Card
       onPress={onPress}
-      accessibilityLabel={`Prescription from ${prescription.doctorName}, ${status}, ${prescription.medicines.length} medicines`}
+      accessibilityLabel={t('prescriptionFrom', {
+        doctor: prescription.doctorName,
+        status,
+        count: prescription.medicines.length,
+      })}
       style={styles.prescriptionCard}
     >
       <View style={styles.cardHeading}>
@@ -229,22 +238,21 @@ function PrescriptionCard({
             {prescription.clinicName}
           </AppText>
         </View>
-        <Badge
-          label={status}
-          tone={status === 'Active' ? 'success' : 'neutral'}
-        />
+        <Badge label={status} tone={isActive ? 'success' : 'neutral'} />
       </View>
       <View style={styles.cardDivider} />
       <View style={styles.cardFooter}>
         <View style={styles.metadata}>
           <AppText variant="caption" color="textSecondary">
-            Issued {formatClinicDay(issuedDate, Date.now())}
+            {t('issued', { date: formatClinicDay(issuedDate, Date.now()) })}
           </AppText>
           <View style={styles.medicineCount}>
             <Pill size={sizes.iconSm} color={colors.textSecondary} />
             <AppText variant="caption" color="textSecondary">
               {prescription.medicines.length}{' '}
-              {prescription.medicines.length === 1 ? 'medicine' : 'medicines'}
+              {prescription.medicines.length === 1
+                ? t('medicine')
+                : t('medicinesPlural')}
             </AppText>
           </View>
         </View>
@@ -256,11 +264,12 @@ function PrescriptionCard({
 
 function PrescriptionsSkeleton() {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   return (
     <ScreenContainer edges={['top', 'left', 'right']}>
       <SkeletonGroup
         style={styles.listContent}
-        accessibilityLabel="Loading prescriptions"
+        accessibilityLabel={t('loadingPrescriptions')}
       >
         <SkeletonBox height={28} width={180} />
         <View style={styles.skeletonAdherence}>

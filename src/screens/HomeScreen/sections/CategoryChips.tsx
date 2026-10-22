@@ -6,15 +6,19 @@ import Chip from '../../../components/Chip';
 import SectionHeader from '../../../components/SectionHeader';
 import { useSectionAction } from '../../../hooks/useSectionAction';
 import type { CategoryChipsSection } from '../../../networking/types/configSchema';
+import { useTranslateContent } from '../../../i18n/useTranslateContent';
 
 /** Horizontal shortcut chips (Consult, Lab tests, Pharmacy…). */
 function CategoryChips({ section }: { section: CategoryChipsSection }) {
+  const translate = useTranslateContent();
   const styles = useThemedStyles(createStyles);
   const onAction = useSectionAction();
 
   return (
     <View style={styles.wrapper}>
-      {section.title ? <SectionHeader title={section.title} /> : null}
+      {section.title ? (
+        <SectionHeader title={translate(section.title)} />
+      ) : null}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -23,7 +27,7 @@ function CategoryChips({ section }: { section: CategoryChipsSection }) {
         {section.items.map(item => (
           <Chip
             key={item.id}
-            label={item.label}
+            label={translate(item.label)}
             icon={item.icon}
             onPress={() => onAction(item.action)}
           />

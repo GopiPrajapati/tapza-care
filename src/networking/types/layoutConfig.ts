@@ -22,6 +22,17 @@ export interface FestivalTheme {
   bannerImageUrl: string;
 }
 
+/** Optional palette used when the operating system requests dark appearance. */
+export interface DarkThemePalette {
+  primary: string;
+  secondary: string;
+  background: string;
+  surface: string;
+  textPrimary: string;
+  textSecondary: string;
+  accent: string;
+}
+
 /** All values are hex colours. */
 export interface ThemeConfig {
   primary: string;
@@ -32,6 +43,7 @@ export interface ThemeConfig {
   textSecondary: string;
   accent: string;
   festival?: FestivalTheme;
+  dark?: DarkThemePalette;
 }
 
 export type SectionBackgroundKind = 'color' | 'gradient' | 'image';

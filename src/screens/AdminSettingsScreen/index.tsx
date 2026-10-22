@@ -25,28 +25,29 @@ import {
 import { useConfigStore } from '../../store/configStore';
 import { useDoseLogStore } from '../../store/doseLogStore';
 import { useMockControlsStore } from '../../store/mockControlsStore';
+import { useTranslation } from 'react-i18next';
 
 const VARIANTS = [
-  { value: 'normal', label: 'Normal' },
-  { value: 'diwali', label: 'Diwali' },
-  { value: 'custom', label: 'Custom' },
+  { value: 'normal', labelKey: 'normal' },
+  { value: 'diwali', labelKey: 'diwali' },
+  { value: 'custom', labelKey: 'custom' },
 ] as const;
 const LATENCIES = [
-  { value: 0, label: '0 ms' },
-  { value: 800, label: '800 ms' },
-  { value: 3000, label: '3 sec' },
+  { value: 0, labelKey: 'latencyZero' },
+  { value: 800, labelKey: 'latency800' },
+  { value: 3000, labelKey: 'latency3000' },
 ] as const;
 const FAILURES = [
-  { value: 'none', label: 'None' },
-  { value: 'config', label: 'Config fails' },
-  { value: 'all', label: 'All fail' },
-  { value: 'booking409', label: 'Force 409' },
-  { value: 'empty', label: 'Empty lists' },
+  { value: 'none', labelKey: 'none' },
+  { value: 'config', labelKey: 'configFails' },
+  { value: 'all', labelKey: 'allFail' },
+  { value: 'booking409', labelKey: 'force409' },
+  { value: 'empty', labelKey: 'emptyLists' },
 ] as const;
 
 type Validation = { json: string; errors: string[]; config?: ValidatedConfig };
 
-function validationFor(json: string): Validation {
+function validationFor(json: string, invalidJsonText: string): Validation {
   let raw: unknown;
   try {
     raw = JSON.parse(json);
@@ -54,7 +55,7 @@ function validationFor(json: string): Validation {
     return {
       json,
       errors: [
-        `(json): ${error instanceof Error ? error.message : 'Invalid JSON'}`,
+        `(json): ${error instanceof Error ? error.message : invalidJsonText}`,
       ],
     };
   }
@@ -76,6 +77,7 @@ function validationFor(json: string): Validation {
 
 function AdminSettingsScreen() {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const { config } = useConfig();
   const queryClient = useQueryClient();
@@ -109,14 +111,12 @@ function AdminSettingsScreen() {
   );
 
   const validate = () => {
-    const result = validationFor(draft);
+    const result = validationFor(draft, t('invalidJson'));
     setValidation(result);
     toast.show({
       message: result.errors.length
-        ? `Found ${result.errors.length} config issue${
-            result.errors.length === 1 ? '' : 's'
-          }`
-        : 'Config is valid',
+        ? t('foundConfigIssues', { count: result.errors.length })
+        : t('configValid'),
       tone: result.errors.length ? 'error' : 'success',
     });
   };
@@ -126,13 +126,13 @@ function AdminSettingsScreen() {
     setCustomConfigJson(draft);
     setVariant('custom');
     setDirty(false);
-    toast.show({ message: 'Custom config applied', tone: 'success' });
+    toast.show({ message: t('customConfigApplied'), tone: 'success' });
   };
 
   const clearCache = () => {
     clearLastGoodConfig();
     queryClient.invalidateQueries({ queryKey: ['config'] });
-    toast.show({ message: 'Cached config cleared', tone: 'success' });
+    toast.show({ message: t('cachedConfigCleared'), tone: 'success' });
   };
 
   const resetBookings = () => {
@@ -140,7 +140,7 @@ function AdminSettingsScreen() {
     queryClient.setQueryData(QUERY_KEYS.bookings, []);
     queryClient.invalidateQueries({ queryKey: ['slots'] });
     toast.show({
-      message: 'Bookings and reserved slots reset',
+      message: t('bookingsReset'),
       tone: 'success',
     });
   };
@@ -157,68 +157,77 @@ function AdminSettingsScreen() {
           keyboardDismissMode="on-drag"
         >
           <AppText variant="title" accessibilityRole="header">
-            Developer settings
+            {t('adminTitle')}
           </AppText>
 
           <SettingsSection
-            title="App config"
-            description="Switch the live theme and home layout."
+            title={t('appConfig')}
+            description={t('appConfigDescription')}
           >
             <ChoiceGroup
-              options={VARIANTS}
+              options={VARIANTS.map(option => ({
+                value: option.value,
+                label: t(option.labelKey),
+              }))}
               selected={variant}
               onSelect={value => setVariant(value)}
             />
           </SettingsSection>
 
           <SettingsSection
-            title="Mock network"
-            description="Control request delay and failure behavior."
+            title={t('mockNetwork')}
+            description={t('mockNetworkDescription')}
           >
-            <AppText variant="label">Latency</AppText>
+            <AppText variant="label">{t('latency')}</AppText>
             <ChoiceGroup
-              options={LATENCIES}
+              options={LATENCIES.map(option => ({
+                value: option.value,
+                label: t(option.labelKey),
+              }))}
               selected={latencyMs}
               onSelect={value => setLatency(value)}
             />
-            <AppText variant="label">Failure mode</AppText>
+            <AppText variant="label">{t('failureMode')}</AppText>
             <ChoiceGroup
-              options={FAILURES}
+              options={FAILURES.map(option => ({
+                value: option.value,
+                label: t(option.labelKey),
+              }))}
               selected={failure}
               onSelect={value => setFailure(value)}
             />
           </SettingsSection>
 
           <SettingsSection
-            title="Local data"
-            description="Clear this device’s cached or mock data."
+            title={t('localData')}
+            description={t('localDataDescription')}
           >
             <Button
-              label="Clear cached config"
+              label={t('clearConfig')}
               variant="secondary"
               onPress={clearCache}
             />
             <Button
-              label="Reset dose log"
+              label={t('resetDoseLog')}
               variant="secondary"
               onPress={() => {
                 resetDoseLog();
-                toast.show({ message: 'Dose log reset', tone: 'success' });
+                toast.show({ message: t('doseLogReset'), tone: 'success' });
               }}
             />
             <Button
-              label="Reset bookings"
+              label={t('resetBookings')}
               variant="secondary"
               onPress={resetBookings}
             />
           </SettingsSection>
 
           <SettingsSection
-            title="Live config editor"
-            description="Edit the active layout JSON, validate it, then apply it as Custom."
+            title={t('liveConfigEditor')}
+            description={t('configEditorDescription')}
           >
             <TextInput
-              accessibilityLabel="Config JSON editor"
+              accessibilityLabel={t('configJsonEditor')}
               multiline
               autoCapitalize="none"
               autoCorrect={false}
@@ -240,8 +249,16 @@ function AdminSettingsScreen() {
               ]}
             />
             <View style={styles.editorActions}>
-              <Button label="Validate" variant="secondary" onPress={validate} />
-              <Button label="Apply" onPress={apply} disabled={!isValidated} />
+              <Button
+                label={t('validate')}
+                variant="secondary"
+                onPress={validate}
+              />
+              <Button
+                label={t('apply')}
+                onPress={apply}
+                disabled={!isValidated}
+              />
             </View>
             {validationResult ? (
               <Card
@@ -255,8 +272,9 @@ function AdminSettingsScreen() {
                 {validationResult.errors.length ? (
                   <>
                     <AppText variant="bodyStrong" color="danger">
-                      {validationResult.errors.length} issue
-                      {validationResult.errors.length === 1 ? '' : 's'} found
+                      {t('configIssue', {
+                        count: validationResult.errors.length,
+                      })}
                     </AppText>
                     {validationResult.errors.map((error, index) => (
                       <AppText
@@ -270,7 +288,7 @@ function AdminSettingsScreen() {
                   </>
                 ) : (
                   <AppText variant="bodyStrong" color="success">
-                    Config is valid and ready to apply.
+                    {t('configReady')}
                   </AppText>
                 )}
               </Card>

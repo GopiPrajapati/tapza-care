@@ -17,6 +17,7 @@ import AppText from '../../../components/AppText';
 import PressableScale from '../../../components/PressableScale';
 import { Routes } from '../../../container/Routes';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
+import { useTranslation } from 'react-i18next';
 
 /** Zepto-style header: visit ETA, patient and locality, profile button. Sits on the top band. */
 function HomeHeader() {
@@ -25,19 +26,20 @@ function HomeHeader() {
   const tone = useTone();
   const ink = tone?.foreground ?? colors.textPrimary;
   const navigation = useAppNavigation();
+  const { t } = useTranslation();
 
   return (
     <View style={styles.row}>
       <View style={styles.texts}>
         <PressableScale
-          accessibilityLabel="Clinic visit ETA"
-          accessibilityHint="Long press to open developer settings"
+          accessibilityLabel={t('clinicVisitEta')}
+          accessibilityHint={t('longPressDeveloperSettings')}
           onLongPress={() => navigation.navigate(Routes.AdminSettings)}
           style={styles.eta}
         >
           <Zap size={sizes.iconLg} color={ink} fill={ink} />
           <AppText variant="title">
-            Clinic visit in {CLINIC_VISIT_ETA_MINUTES} min
+            {t('clinicVisitIn', { minutes: CLINIC_VISIT_ETA_MINUTES })}
           </AppText>
         </PressableScale>
         <View style={styles.location}>
@@ -49,7 +51,7 @@ function HomeHeader() {
         </View>
       </View>
       <PressableScale
-        accessibilityLabel="Open profile"
+        accessibilityLabel={t('openProfile')}
         onPress={() =>
           navigation.navigate(Routes.MainTabs, { screen: Routes.Profile })
         }

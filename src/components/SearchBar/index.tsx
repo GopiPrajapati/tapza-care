@@ -11,6 +11,7 @@ import {
 import { MAX_FONT_SCALE_DENSE } from '../../commonutils/typography';
 import AppText from '../AppText';
 import PressableScale from '../PressableScale';
+import { useTranslation } from 'react-i18next';
 
 interface SearchBarBaseProps {
   placeholder: string;
@@ -48,6 +49,7 @@ function SearchBar({
 }: SearchBarProps) {
   const { colors, sizes } = useTheme();
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
 
   const field = onPress ? (
     <PressableScale
@@ -82,7 +84,7 @@ function SearchBar({
       />
       {value ? (
         <PressableScale
-          accessibilityLabel="Clear search"
+          accessibilityLabel={t('clear')}
           onPress={() => onChangeText?.('')}
           hitSlop={sizes.minTouch / 4}
           style={styles.clear}

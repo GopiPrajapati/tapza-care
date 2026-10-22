@@ -12,36 +12,78 @@
       "name": "Diwali",
       "greeting": "Happy Diwali! Wishing your family good health and light.",
       "bannerImageUrl": "home/diwali-banner"
+    },
+    "dark": {
+      "primary": "#2DD4BF",
+      "secondary": "#38BDF8",
+      "background": "#101817",
+      "surface": "#1C2927",
+      "textPrimary": "#F1F5F9",
+      "textSecondary": "#B8C7C4",
+      "accent": "#FBBF24"
     }
   },
   "tabs": [
-    { "id": "tab-home", "label": "Home", "icon": "home", "screen": "home" },
-    { "id": "tab-bookings", "label": "Bookings", "icon": "calendar", "screen": "bookings" },
-    { "id": "tab-prescriptions", "label": "Medicines", "icon": "pill", "screen": "prescriptions" },
-    { "id": "tab-profile", "label": "Profile", "icon": "user", "screen": "profile" }
+    {
+      "id": "tab-home",
+      "label": "Home",
+      "icon": "home",
+      "screen": "home"
+    },
+    {
+      "id": "tab-bookings",
+      "label": "Bookings",
+      "icon": "calendar",
+      "screen": "bookings"
+    },
+    {
+      "id": "tab-prescriptions",
+      "label": "Medicines",
+      "icon": "pill",
+      "screen": "prescriptions"
+    },
+    {
+      "id": "tab-profile",
+      "label": "Profile",
+      "icon": "user",
+      "screen": "profile"
+    }
   ],
   "sections": [
     {
       "id": "sec-hero-diwali",
       "type": "hero_banner",
-      "background": { "kind": "image", "value": "home/diwali-banner" },
+      "background": {
+        "kind": "image",
+        "value": "home/diwali-banner"
+      },
       "items": [
         {
           "id": "hero-diwali",
           "title": "Celebrate Diwali in good health",
-          "subtitle": "Festive family check-ups at ₹999 this week",
+          "subtitle": "Festive family check-ups at \u20b9999 this week",
           "imageKey": "home/diwali-banner",
           "ctaLabel": "Book family check-up",
-          "action": { "type": "open_doctors", "specialty": "General Physician" }
+          "action": {
+            "type": "open_doctors",
+            "specialty": "General Physician"
+          }
         }
       ]
     },
     {
       "id": "sec-offer-diwali",
       "type": "offer_strip",
-      "background": { "kind": "gradient", "value": "#F59E0B,#EA580C" },
+      "background": {
+        "kind": "gradient",
+        "value": "#F59E0B,#EA580C"
+      },
       "items": [
-        { "id": "offer-camp", "message": "Diwali health camp: free BP and sugar check at Kondapur, 10 AM to 1 PM", "icon": "sparkles" }
+        {
+          "id": "offer-camp",
+          "message": "Diwali health camp: free BP and sugar check at Kondapur, 10 AM to 1 PM",
+          "icon": "sparkles"
+        }
       ]
     },
     {
@@ -49,57 +91,180 @@
       "type": "service_grid",
       "title": "Festive health packages",
       "columns": 2,
-      "background": { "kind": "color", "value": "#FFEDD5" },
+      "background": {
+        "kind": "color",
+        "value": "#FFEDD5"
+      },
       "items": [
-        { "id": "svc-family", "name": "Family health check", "priceInr": 999, "imageKey": "services/family", "badge": "Festive offer", "doctorId": "doc-1" },
-        { "id": "svc-sweets", "name": "Sugar review after sweets", "priceInr": 499, "imageKey": "services/diabetes", "badge": "Diwali special", "doctorId": "doc-6" },
-        { "id": "svc-burns", "name": "Skin & burn care", "priceInr": 599, "imageKey": "services/skin", "doctorId": "doc-4" },
-        { "id": "svc-breath", "name": "Breathing & allergy", "priceInr": 549, "imageKey": "services/ent", "badge": "Smoke season", "doctorId": "doc-8" }
+        {
+          "id": "svc-family",
+          "name": "Family health check",
+          "priceInr": 999,
+          "imageKey": "services/family",
+          "badge": "Festive offer",
+          "doctorId": "doc-1"
+        },
+        {
+          "id": "svc-sweets",
+          "name": "Sugar review after sweets",
+          "priceInr": 499,
+          "imageKey": "services/diabetes",
+          "badge": "Diwali special",
+          "doctorId": "doc-6"
+        },
+        {
+          "id": "svc-burns",
+          "name": "Skin & burn care",
+          "priceInr": 599,
+          "imageKey": "services/skin",
+          "doctorId": "doc-4"
+        },
+        {
+          "id": "svc-breath",
+          "name": "Breathing & allergy",
+          "priceInr": 549,
+          "imageKey": "services/ent",
+          "badge": "Smoke season",
+          "doctorId": "doc-8"
+        }
       ]
     },
     {
       "id": "sec-doctors-diwali",
       "type": "doctor_carousel",
       "title": "Available during Diwali week",
-      "background": { "kind": "color", "value": "#FFF7ED" },
+      "background": {
+        "kind": "color",
+        "value": "#FFF7ED"
+      },
       "items": [
-        { "doctorId": "doc-6" },
-        { "doctorId": "doc-1" },
-        { "doctorId": "doc-4" },
-        { "doctorId": "doc-8" },
-        { "doctorId": "doc-10" }
+        {
+          "doctorId": "doc-6"
+        },
+        {
+          "doctorId": "doc-1"
+        },
+        {
+          "doctorId": "doc-4"
+        },
+        {
+          "doctorId": "doc-8"
+        },
+        {
+          "doctorId": "doc-10"
+        }
       ]
     },
     {
       "id": "sec-quick-diwali",
       "type": "quick_actions",
-      "background": { "kind": "color", "value": "#FFFFFF" },
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
       "items": [
-        { "id": "qa-book", "label": "Book", "icon": "calendar-plus", "action": { "type": "open_doctors" } },
-        { "id": "qa-rx", "label": "Prescriptions", "icon": "file-text", "action": { "type": "open_prescriptions" } },
-        { "id": "qa-remind", "label": "Reminders", "icon": "bell", "action": { "type": "open_reminders" } },
-        { "id": "qa-family", "label": "Family", "icon": "users", "action": { "type": "open_family" } }
+        {
+          "id": "qa-book",
+          "label": "Book",
+          "icon": "calendar-plus",
+          "action": {
+            "type": "open_doctors"
+          }
+        },
+        {
+          "id": "qa-rx",
+          "label": "Prescriptions",
+          "icon": "file-text",
+          "action": {
+            "type": "open_prescriptions"
+          }
+        },
+        {
+          "id": "qa-remind",
+          "label": "Reminders",
+          "icon": "bell",
+          "action": {
+            "type": "open_reminders"
+          }
+        },
+        {
+          "id": "qa-family",
+          "label": "Family",
+          "icon": "users",
+          "action": {
+            "type": "open_family"
+          }
+        }
       ]
     },
     {
       "id": "sec-categories-diwali",
       "type": "category_chips",
       "title": "Festive care",
-      "background": { "kind": "color", "value": "#FFFFFF" },
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
       "items": [
-        { "id": "cat-consult", "label": "Consult", "icon": "stethoscope", "action": { "type": "open_doctors", "specialty": "General Physician" } },
-        { "id": "cat-sugar", "label": "Sugar check", "icon": "droplet", "action": { "type": "open_doctors", "specialty": "Diabetology" } },
-        { "id": "cat-skin", "label": "Burns & skin", "icon": "flame", "action": { "type": "open_doctors", "specialty": "Dermatology" } },
-        { "id": "cat-lab", "label": "Lab tests", "icon": "flask-conical", "action": { "type": "coming_soon" } },
-        { "id": "cat-pharmacy", "label": "Pharmacy", "icon": "pill", "action": { "type": "coming_soon" } }
+        {
+          "id": "cat-consult",
+          "label": "Consult",
+          "icon": "stethoscope",
+          "action": {
+            "type": "open_doctors",
+            "specialty": "General Physician"
+          }
+        },
+        {
+          "id": "cat-sugar",
+          "label": "Sugar check",
+          "icon": "droplet",
+          "action": {
+            "type": "open_doctors",
+            "specialty": "Diabetology"
+          }
+        },
+        {
+          "id": "cat-skin",
+          "label": "Burns & skin",
+          "icon": "flame",
+          "action": {
+            "type": "open_doctors",
+            "specialty": "Dermatology"
+          }
+        },
+        {
+          "id": "cat-lab",
+          "label": "Lab tests",
+          "icon": "flask-conical",
+          "action": {
+            "type": "coming_soon"
+          }
+        },
+        {
+          "id": "cat-pharmacy",
+          "label": "Pharmacy",
+          "icon": "pill",
+          "action": {
+            "type": "coming_soon"
+          }
+        }
       ]
     },
     {
       "id": "sec-rangoli",
       "type": "rangoli_gallery",
       "title": "Rangoli gallery (unknown section type, must be skipped)",
-      "background": { "kind": "color", "value": "#FFFFFF" },
-      "items": [{ "id": "rangoli-1", "imageUrl": "https://example.com/rangoli.jpg" }]
+      "background": {
+        "kind": "color",
+        "value": "#FFFFFF"
+      },
+      "items": [
+        {
+          "id": "rangoli-1",
+          "imageUrl": "https://example.com/rangoli.jpg"
+        }
+      ]
     }
   ]
 }

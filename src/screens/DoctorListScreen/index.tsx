@@ -23,6 +23,7 @@ import type { Doctor } from '../../networking/types/models';
 import DoctorListSkeleton from './components/DoctorListSkeleton';
 import DoctorRow from './components/DoctorRow';
 import { filterDoctors, specialtiesOf } from './filterDoctors';
+import { useTranslation } from 'react-i18next';
 
 const keyExtractor = (doctor: Doctor) => doctor.id;
 
@@ -32,6 +33,7 @@ function DoctorListScreen({
   route,
 }: RootStackScreenProps<typeof Routes.DoctorList>) {
   const styles = useThemedStyles(createStyles);
+  const { t } = useTranslation();
   const {
     data: doctors,
     isPending,
@@ -51,10 +53,7 @@ function DoctorListScreen({
     return specialty && !list.includes(specialty) ? [specialty, ...list] : list;
   }, [doctors, specialty]);
 
-  const results = useMemo(
-    () => filterDoctors(doctors ?? [], debouncedQuery, specialty),
-    [doctors, debouncedQuery, specialty],
-  );
+  const results = filterDoctors(doctors ?? [], debouncedQuery, specialty);
 
   const openDoctor = useCallback(
     (doctorId: string) =>
@@ -84,7 +83,7 @@ function DoctorListScreen({
     if (isError) {
       return (
         <ErrorState
-          title="Could not load doctors"
+          title={t('doctorsError')}
           onRetry={() => refetch()}
           retrying={isRefetching}
         />
@@ -94,9 +93,9 @@ function DoctorListScreen({
       return (
         <EmptyState
           illustration="generic"
-          title="No doctors available"
-          message="Please check again later."
-          actionLabel="Refresh"
+          title={t('doctorsEmpty')}
+          message={t('checkAgainLater')}
+          actionLabel={t('refresh')}
           onAction={() => refetch()}
         />
       );
@@ -112,17 +111,18 @@ function DoctorListScreen({
         ListHeaderComponent={
           results.length ? (
             <AppText variant="label" color="textSecondary">
-              {results.length} {results.length === 1 ? 'doctor' : 'doctors'}
-              {specialty ? ` · ${specialty}` : ''}
+              {results.length}{' '}
+              {results.length === 1 ? t('doctor') : t('doctors')}
+              {specialty ? ` · ${t(specialty)}` : ''}
             </AppText>
           ) : undefined
         }
         ListEmptyComponent={
           <EmptyState
             illustration="search"
-            title="No doctors match"
-            message="Try another name, specialty or language."
-            actionLabel={filtering ? 'Clear filters' : undefined}
+            title={t('doctorsNoMatch')}
+            message={t('doctorsSearchHint')}
+            actionLabel={filtering ? t('clearFilters') : undefined}
             onAction={filtering ? clearFilters : undefined}
           />
         }
@@ -139,13 +139,13 @@ function DoctorListScreen({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <Header
-          title="Doctors"
-          subtitle="Tapza Clinic"
+          title={t('doctorsTitle')}
+          subtitle={t('tapzaClinic')}
           onBackPress={navigation.goBack}
         />
         <View style={styles.search}>
           <SearchBar
-            placeholder='Search "skin", "Telugu", "Dr. Reddy"'
+            placeholder={t('doctorSearch')}
             value={query}
             onChangeText={setQuery}
             autoFocus={route.params?.focusSearch}
@@ -159,14 +159,14 @@ function DoctorListScreen({
             contentContainerStyle={styles.chips}
           >
             <Chip
-              label="All"
+              label={t('all')}
               selected={specialty === null}
               onPress={() => setSpecialty(null)}
             />
             {specialties.map(item => (
               <Chip
                 key={item}
-                label={item}
+                label={t(item)}
                 selected={specialty === item}
                 onPress={() =>
                   setSpecialty(current => (current === item ? null : item))

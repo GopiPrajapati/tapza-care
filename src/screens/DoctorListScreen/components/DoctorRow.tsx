@@ -15,6 +15,8 @@ import Card from '../../../components/Card';
 import NextSlotBadge from '../../../components/NextSlotBadge';
 import PriceText from '../../../components/PriceText';
 import type { Doctor } from '../../../networking/types/models';
+import { useTranslation } from 'react-i18next';
+import { useTranslateContent } from '../../../i18n/useTranslateContent';
 
 export interface DoctorRowProps {
   doctor: Doctor;
@@ -25,16 +27,17 @@ export interface DoctorRowProps {
 function DoctorRow({ doctor, onOpen }: DoctorRowProps) {
   const styles = useThemedStyles(createStyles);
   const { colors, sizes } = useTheme();
+  const { t } = useTranslation();
+  const translate = useTranslateContent();
   const open = () => onOpen(doctor.id);
 
   return (
     <Card
       onPress={open}
-      accessibilityLabel={`${doctor.name}, ${
-        doctor.specialty
-      }, speaks ${doctor.languages.join(', ')}, fee ${formatInr(
-        doctor.feeInr,
-      )}`}
+      accessibilityLabel={`${doctor.name}, ${translate(doctor.specialty)}, ${t(
+        'speaksLanguages',
+        { languages: doctor.languages.map(language => t(language)).join(', ') },
+      )}, ${formatInr(doctor.feeInr)}`}
       style={styles.card}
     >
       <View style={styles.top}>
@@ -44,10 +47,10 @@ function DoctorRow({ doctor, onOpen }: DoctorRowProps) {
             {doctor.name}
           </AppText>
           <AppText variant="label" color="primaryText">
-            {doctor.specialty}
+            {translate(doctor.specialty)}
           </AppText>
           <AppText variant="caption" color="textSecondary" numberOfLines={1}>
-            {doctor.languages.join(' · ')}
+            {doctor.languages.map(language => translate(language)).join(' · ')}
           </AppText>
         </View>
       </View>
@@ -70,9 +73,9 @@ function DoctorRow({ doctor, onOpen }: DoctorRowProps) {
           <NextSlotBadge doctorId={doctor.id} />
         </View>
         <Button
-          label="Book"
+          label={t('book')}
           onPress={open}
-          accessibilityLabel={`Book ${doctor.name}`}
+          accessibilityLabel={t('bookDoctor', { name: doctor.name })}
         />
       </View>
     </Card>

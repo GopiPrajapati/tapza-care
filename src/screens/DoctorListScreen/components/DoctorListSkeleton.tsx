@@ -12,6 +12,7 @@ import {
   SkeletonGroup,
   SkeletonText,
 } from '../../../components/Skeleton';
+import { useTranslation } from 'react-i18next';
 
 const PLACEHOLDER_ROWS = 4;
 
@@ -19,8 +20,9 @@ const PLACEHOLDER_ROWS = 4;
 function DoctorListSkeleton() {
   const styles = useThemedStyles(createStyles);
   const { sizes, radii } = useTheme();
+  const { t } = useTranslation();
   return (
-    <SkeletonGroup accessibilityLabel="Loading doctors" style={styles.list}>
+    <SkeletonGroup accessibilityLabel={t('loadingDoctors')} style={styles.list}>
       {Array.from({ length: PLACEHOLDER_ROWS }, (_, index) => (
         <View key={index} style={styles.card}>
           <View style={styles.top}>

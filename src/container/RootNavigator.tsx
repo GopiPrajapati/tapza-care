@@ -16,11 +16,13 @@ import PrescriptionDetailsScreen from '../screens/PrescriptionDetailsScreen';
 import ServiceListScreen from '../screens/ServiceListScreen';
 import { Routes, type RootStackParamList } from './Routes';
 import TabNavigator from './TabNavigator';
+import { useTranslation } from 'react-i18next';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   // Headers, tab bar and screen backgrounds follow the config theme.
   const navigationTheme = useMemo<NavigationTheme>(
@@ -61,22 +63,22 @@ function RootNavigator() {
           <Stack.Screen
             name={Routes.DoctorDetails}
             component={DoctorDetailsScreen}
-            options={{ title: 'Book appointment' }}
+            options={{ title: t('bookAppointment') }}
           />
           <Stack.Screen
             name={Routes.ServiceList}
             component={ServiceListScreen}
-            options={{ title: 'Services' }}
+            options={{ title: t('serviceListTitle') }}
           />
           <Stack.Screen
             name={Routes.PrescriptionDetails}
             component={PrescriptionDetailsScreen}
-            options={{ title: 'Prescription' }}
+            options={{ title: t('prescriptionSingular') }}
           />
           <Stack.Screen
             name={Routes.AdminSettings}
             component={AdminSettingsScreen}
-            options={{ title: 'Admin settings' }}
+            options={{ title: t('adminTitle') }}
           />
           {/* No swipe-to-dismiss: leaving a confirmed booking goes through the screen's own actions. */}
           <Stack.Screen
