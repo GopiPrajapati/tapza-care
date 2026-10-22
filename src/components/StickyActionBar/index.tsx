@@ -2,7 +2,11 @@ import React from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useThemedStyles, type Theme } from '../../commonutils/theme';
+import {
+  SurfaceTone,
+  useThemedStyles,
+  type Theme,
+} from '../../commonutils/theme';
 import AppText from '../AppText';
 import Button from '../Button';
 import PriceText from '../PriceText';
@@ -33,34 +37,36 @@ function StickyActionBar({
   const insets = useSafeAreaInsets();
 
   return (
-    <View
-      style={[
-        styles.bar,
-        { paddingBottom: Math.max(insets.bottom, styles.bar.paddingTop) },
-      ]}
-    >
-      <View style={styles.summary}>
-        <AppText variant="caption" color="textSecondary">
-          {label}
-        </AppText>
-        {amountInr !== undefined ? (
-          <PriceText amount={amountInr} variant="title" />
-        ) : null}
-        {caption ? (
-          <AppText variant="caption" color="textSecondary" numberOfLines={1}>
-            {caption}
+    <SurfaceTone>
+      <View
+        style={[
+          styles.bar,
+          { paddingBottom: Math.max(insets.bottom, styles.bar.paddingTop) },
+        ]}
+      >
+        <View style={styles.summary}>
+          <AppText variant="caption" color="textSecondary">
+            {label}
           </AppText>
-        ) : null}
+          {amountInr !== undefined ? (
+            <PriceText amount={amountInr} variant="title" />
+          ) : null}
+          {caption ? (
+            <AppText variant="caption" color="textSecondary" numberOfLines={1}>
+              {caption}
+            </AppText>
+          ) : null}
+        </View>
+        <Button
+          label={buttonLabel}
+          onPress={onPress}
+          size="large"
+          disabled={disabled}
+          loading={loading}
+          style={styles.button}
+        />
       </View>
-      <Button
-        label={buttonLabel}
-        onPress={onPress}
-        size="large"
-        disabled={disabled}
-        loading={loading}
-        style={styles.button}
-      />
-    </View>
+    </SurfaceTone>
   );
 }
 

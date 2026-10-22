@@ -169,3 +169,31 @@ StickyActionBar, BottomSheet, ListRow.
 native-stack screen; not a double safe-area inset (fixed that, strip remains). Investigate in Phase 10 where the
 bar is used for real. Toast overlaps a StickyActionBar; add a bottom offset option then.
 **Rejected:** a gradient-sweep shimmer (heavier; opacity pulse reads as loading and is cheaper on mid-range Android).
+
+## Phase 7 — Home sections (static, no scroll motion)
+**Prompt:** section registry (unknown type → null), SectionBackground (color/gradient/image with fallback), the six
+section renderers, Zepto-style header + search on a rounded top band coloured by the first section, FlatList of
+memoised sections keyed by id, a "Next dose" floating bar from prescriptions + dose log, shape-matched skeleton,
+error and stale states, both configs distinct. Tests for ServiceGrid and unknown types.
+**Decisions:**
+- **Band tone:** config colours are arbitrary, so `toneOn(stops)` picks text colours that reach WCAG AA on every
+  gradient stop of a band; `AppText` uses it automatically inside a band. Cards, chips, search and the sticky bar
+  reset to normal theme colours (`SurfaceTone`), so a white card on a dark band still reads correctly.
+- The first section shares the top band with the header and search (Zepto); every other section is its own band.
+- `react-native-linear-gradient` is a legacy interop view on the New Architecture and does not grow with its
+  children, so it is drawn as an absolute background layer behind normal content.
+- Normal hero gradient changed from `#0F766E,#14B8A6` to `#0F766E,#115E59`: no text colour reached AA on the light
+  teal end (caught by the tone check; a dev warning now flags such configs).
+- Quick actions: 4 items → 2×2 large tiles (easier for older users than Zepto's 3-column), 3/6 items → 3 columns.
+- Doctor cards show each doctor's next free slot (`useNextSlot`: today, else tomorrow); slot queries are per
+  doctor and cached, so the carousel costs at most 2 small requests per visible doctor.
+- `findNextDose` is pure and tested; the floating bar's "Mark taken" writes the persisted dose log with an Undo
+  toast.
+- Drawn hero art (care badge / diya) is used when the config's image key is not bundled, so both configs look
+  finished without stock photos.
+- Verified on the iOS simulator in both configs (Normal: teal, hero → tiles → chips → doctors → 3-col grid → offer;
+  Diwali: maroon, festival greeting + diya, gradient offer strip, 2-col festive packages with badges, different order).
+**Rejected:** formatting unrelated files — a repo-wide Prettier run touched ~30 files outside this phase; those
+were restored to keep the commit focused.
+**Known gaps (later phases):** search bar opens the doctor list (no search screen yet); "See all" for services
+and the Book pill both go to the doctor list.

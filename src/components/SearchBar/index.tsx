@@ -2,7 +2,12 @@ import React from 'react';
 import { TextInput, View } from 'react-native';
 import { Search, X } from 'lucide-react-native';
 
-import { useTheme, useThemedStyles, type Theme } from '../../commonutils/theme';
+import {
+  SurfaceTone,
+  useTheme,
+  useThemedStyles,
+  type Theme,
+} from '../../commonutils/theme';
 import { MAX_FONT_SCALE_DENSE } from '../../commonutils/typography';
 import AppText from '../AppText';
 import PressableScale from '../PressableScale';
@@ -78,15 +83,17 @@ function SearchBar({
   );
 
   return (
-    <View style={styles.container}>
-      {field}
-      {rightSlot ? (
-        <>
-          <View style={styles.divider} />
-          {rightSlot}
-        </>
-      ) : null}
-    </View>
+    <SurfaceTone>
+      <View style={styles.container}>
+        {field}
+        {rightSlot ? (
+          <>
+            <View style={styles.divider} />
+            {rightSlot}
+          </>
+        ) : null}
+      </View>
+    </SurfaceTone>
   );
 }
 

@@ -1,4 +1,10 @@
-import { createContext, createElement, useContext, useMemo, type ReactNode } from 'react';
+import {
+  createContext,
+  createElement,
+  useContext,
+  useMemo,
+  type ReactNode,
+} from 'react';
 import { StyleSheet, type StatusBarStyle, type ViewStyle } from 'react-native';
 
 import type { ThemeConfig } from '../networking/types/layoutConfig';
@@ -30,11 +36,17 @@ function hexToRgb(hex: string): Rgb {
   }
   // 8-digit hex: ignore alpha for contrast purposes.
   const int = parseInt(value.slice(0, 6), 16);
-  return [Math.floor(int / 65536) % 256, Math.floor(int / 256) % 256, int % 256];
+  return [
+    Math.floor(int / 65536) % 256,
+    Math.floor(int / 256) % 256,
+    int % 256,
+  ];
 }
 
 const rgbToHex = ([r, g, b]: Rgb): string =>
-  `#${[r, g, b].map(c => Math.round(c).toString(16).padStart(2, '0')).join('')}`.toUpperCase();
+  `#${[r, g, b]
+    .map(c => Math.round(c).toString(16).padStart(2, '0'))
+    .join('')}`.toUpperCase();
 
 /** Linear mix: amount 0 → a, 1 → b. */
 export function mix(a: string, b: string, amount: number): string {
@@ -66,6 +78,9 @@ export function contrastRatio(a: string, b: string): number {
 
 const isLight = (hex: string) => relativeLuminance(hex) > 0.4;
 
+/** True for light colours (where dark text/icons are needed). */
+export const isLightColor = isLight;
+
 /**
  * Returns `fg`, nudged towards black or white just enough to reach `min` contrast against every background.
  * Falls back to black or white (whichever contrasts best) if nudging cannot get there.
@@ -75,7 +90,8 @@ export function ensureContrast(
   backgrounds: string[],
   min = MIN_TEXT_CONTRAST,
 ): string {
-  const passes = (color: string) => backgrounds.every(bg => contrastRatio(color, bg) >= min);
+  const passes = (color: string) =>
+    backgrounds.every(bg => contrastRatio(color, bg) >= min);
   if (passes(fg)) {
     return fg.toUpperCase();
   }
@@ -132,6 +148,8 @@ export const sizes = {
   avatarMd: 56,
   avatarLg: 72,
   illustration: 160,
+  heroArt: 112,
+  carouselCard: 236,
   hairline: StyleSheet.hairlineWidth,
   border: 1,
   handleWidth: 40,
@@ -195,7 +213,11 @@ export interface Theme {
 }
 
 /** Base hues for status colours; adjusted per theme for contrast. */
-const STATUS_HUES = { success: '#15803D', warning: '#B45309', danger: '#B91C1C' };
+const STATUS_HUES = {
+  success: '#15803D',
+  warning: '#B45309',
+  danger: '#B91C1C',
+};
 
 export function buildTheme(config: ThemeConfig): Theme {
   const { primary, secondary, background, surface, accent } = config;
@@ -237,7 +259,12 @@ export function buildTheme(config: ThemeConfig): Theme {
     skeletonHighlight: mix(surface, textPrimary, 0.03),
   };
 
-  const shadow = (opacity: number, radius: number, offsetY: number, androidElevation: number) => ({
+  const shadow = (
+    opacity: number,
+    radius: number,
+    offsetY: number,
+    androidElevation: number,
+  ) => ({
     shadowColor: textPrimary,
     shadowOpacity: opacity,
     shadowRadius: radius,
@@ -266,7 +293,13 @@ export function buildTheme(config: ThemeConfig): Theme {
 
 const ThemeContext = createContext<Theme | null>(null);
 
-export function ThemeProvider({ theme, children }: { theme: Theme; children: ReactNode }) {
+export function ThemeProvider({
+  theme,
+  children,
+}: {
+  theme: Theme;
+  children: ReactNode;
+}) {
   // createElement instead of JSX keeps this file .ts, as in the agreed folder structure.
   return createElement(ThemeContext.Provider, { value: theme }, children);
 }
@@ -284,9 +317,81 @@ export function useTheme(): Theme {
  *   const createStyles = (t: Theme) => ({ box: { padding: t.spacing.lg } });
  *   const styles = useThemedStyles(createStyles);
  */
-export function useThemedStyles<T extends Parameters<typeof StyleSheet.create>[0]>(
-  factory: (theme: Theme) => T,
-): Readonly<T> {
+export function useThemedStyles<
+  T extends Parameters<typeof StyleSheet.create>[0],
+>(factory: (theme: Theme) => T): Readonly<T> {
   const theme = useTheme();
   return useMemo(() => StyleSheet.create(factory(theme)), [theme, factory]);
+}
+
+// ---------- Tone: readable text on coloured section bands ----------
+
+/** Text colours that read well on a particular section background. */
+export interface Tone {
+  foreground: string;
+  muted: string;
+  /** Links and highlights on this band. */
+  accent: string;
+}
+
+const passesOnAll = (color: string, backgrounds: string[]) =>
+  backgrounds.every(bg => contrastRatio(color, bg) >= MIN_TEXT_CONTRAST);
+
+const firstPassing = (
+  candidates: string[],
+  backgrounds: string[],
+  fallback: string,
+) => candidates.find(color => passesOnAll(color, backgrounds)) ?? fallback;
+
+/**
+ * Picks text colours for a band whose colour(s) come from config. `stops` are every colour the text may sit on
+ * (all gradient stops), so text stays at WCAG AA across the whole band.
+ */
+export function toneOn(stops: string[], colors: ThemeColors): Tone {
+  // Worst-case contrast of a colour across every stop; used when no candidate reaches AA everywhere.
+  const worst = (color: string) =>
+    Math.min(...stops.map(stop => contrastRatio(color, stop)));
+  const candidates = [colors.textPrimary, WHITE, BLACK];
+  const best = candidates.reduce((a, b) => (worst(b) > worst(a) ? b : a));
+  const foreground = firstPassing(candidates, stops, best);
+  if (__DEV__ && worst(foreground) < MIN_TEXT_CONTRAST) {
+    console.warn(
+      `[theme] No text colour reaches AA on band ${stops.join(', ')}`,
+    );
+  }
+  const muted = firstPassing(
+    [
+      colors.textSecondary,
+      mix(foreground, stops[0], 0.18),
+      mix(foreground, stops[0], 0.1),
+    ],
+    stops,
+    foreground,
+  );
+  const accent = firstPassing(
+    [colors.primaryText, foreground],
+    stops,
+    foreground,
+  );
+  return { foreground, muted, accent };
+}
+
+const ToneContext = createContext<Tone | null>(null);
+
+/** Text inside a SectionBackground uses its tone; null outside bands or inside surfaces (cards, inputs). */
+export const useTone = (): Tone | null => useContext(ToneContext);
+
+export function ToneProvider({
+  tone,
+  children,
+}: {
+  tone: Tone | null;
+  children: ReactNode;
+}) {
+  return createElement(ToneContext.Provider, { value: tone }, children);
+}
+
+/** Wrap surface components (cards, inputs) so their text goes back to the normal theme colours. */
+export function SurfaceTone({ children }: { children: ReactNode }) {
+  return createElement(ToneContext.Provider, { value: null }, children);
 }

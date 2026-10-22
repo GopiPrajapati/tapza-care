@@ -3,7 +3,12 @@ import { View } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import Svg, { Line } from 'react-native-svg';
 
-import { useTheme, useThemedStyles, type Theme } from '../../commonutils/theme';
+import {
+  useTheme,
+  useThemedStyles,
+  type Theme,
+  useTone,
+} from '../../commonutils/theme';
 import AppText from '../AppText';
 import PressableScale from '../PressableScale';
 
@@ -24,6 +29,8 @@ function SectionHeader({
 }: SectionHeaderProps) {
   const { colors, sizes, spacing } = useTheme();
   const styles = useThemedStyles(createStyles);
+  const tone = useTone();
+  const linkColor = tone?.accent ?? colors.primaryText;
 
   return (
     <View style={styles.wrapper}>
@@ -38,7 +45,8 @@ function SectionHeader({
             y1="0.5"
             x2="100%"
             y2="0.5"
-            stroke={colors.border}
+            stroke={tone?.muted ?? colors.border}
+            strokeOpacity={tone ? 0.5 : 1}
             strokeWidth={sizes.border}
             strokeDasharray={`${spacing.xs} ${spacing.xs}`}
           />
@@ -50,10 +58,10 @@ function SectionHeader({
             onPress={onSeeAll}
             style={styles.seeAll}
           >
-            <AppText variant="label" color="primaryText">
+            <AppText variant="label" style={{ color: linkColor }}>
               {seeAllLabel}
             </AppText>
-            <ChevronRight size={sizes.iconSm} color={colors.primaryText} />
+            <ChevronRight size={sizes.iconSm} color={linkColor} />
           </PressableScale>
         ) : null}
       </View>

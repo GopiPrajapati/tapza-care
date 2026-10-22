@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { useThemedStyles, type Theme } from '../../commonutils/theme';
+import {
+  SurfaceTone,
+  useThemedStyles,
+  type Theme,
+} from '../../commonutils/theme';
 import { MAX_FONT_SCALE_DENSE } from '../../commonutils/typography';
 import AppText from '../AppText';
 import Icon from '../Icon';
@@ -20,24 +24,26 @@ function Chip({ label, onPress, selected = false, icon }: ChipProps) {
   const foreground = selected ? 'onPrimary' : 'textPrimary';
 
   return (
-    <PressableScale
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ selected }}
-      onPress={onPress}
-      style={[styles.chip, selected && styles.selected]}
-    >
-      {icon ? (
-        <Icon name={icon} color={selected ? 'onPrimary' : 'primaryText'} />
-      ) : null}
-      <AppText
-        variant="label"
-        color={foreground}
-        maxFontSizeMultiplier={MAX_FONT_SCALE_DENSE}
+    <SurfaceTone>
+      <PressableScale
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        accessibilityState={{ selected }}
+        onPress={onPress}
+        style={[styles.chip, selected && styles.selected]}
       >
-        {label}
-      </AppText>
-    </PressableScale>
+        {icon ? (
+          <Icon name={icon} color={selected ? 'onPrimary' : 'primaryText'} />
+        ) : null}
+        <AppText
+          variant="label"
+          color={foreground}
+          maxFontSizeMultiplier={MAX_FONT_SCALE_DENSE}
+        >
+          {label}
+        </AppText>
+      </PressableScale>
+    </SurfaceTone>
   );
 }
 
