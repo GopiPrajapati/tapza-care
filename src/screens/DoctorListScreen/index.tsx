@@ -1,5 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, ScrollView, View, type ListRenderItem } from 'react-native';
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+  type ListRenderItem,
+} from 'react-native';
 
 import { useThemedStyles, type Theme } from '../../commonutils/theme';
 import AppText from '../../components/AppText';
@@ -127,49 +134,55 @@ function DoctorListScreen({
 
   return (
     <ScreenContainer edges={['top', 'left', 'right']}>
-      <Header
-        title="Doctors"
-        subtitle="Tapza Clinic"
-        onBackPress={navigation.goBack}
-      />
-      <View style={styles.search}>
-        <SearchBar
-          placeholder='Search "skin", "Telugu", "Dr. Reddy"'
-          value={query}
-          onChangeText={setQuery}
-          autoFocus={route.params?.focusSearch}
+      <KeyboardAvoidingView
+        style={styles.keyboardFrame}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <Header
+          title="Doctors"
+          subtitle="Tapza Clinic"
+          onBackPress={navigation.goBack}
         />
-      </View>
-      <View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.chips}
-        >
-          <Chip
-            label="All"
-            selected={specialty === null}
-            onPress={() => setSpecialty(null)}
+        <View style={styles.search}>
+          <SearchBar
+            placeholder='Search "skin", "Telugu", "Dr. Reddy"'
+            value={query}
+            onChangeText={setQuery}
+            autoFocus={route.params?.focusSearch}
           />
-          {specialties.map(item => (
+        </View>
+        <View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.chips}
+          >
             <Chip
-              key={item}
-              label={item}
-              selected={specialty === item}
-              onPress={() =>
-                setSpecialty(current => (current === item ? null : item))
-              }
+              label="All"
+              selected={specialty === null}
+              onPress={() => setSpecialty(null)}
             />
-          ))}
-        </ScrollView>
-      </View>
-      {body()}
+            {specialties.map(item => (
+              <Chip
+                key={item}
+                label={item}
+                selected={specialty === item}
+                onPress={() =>
+                  setSpecialty(current => (current === item ? null : item))
+                }
+              />
+            ))}
+          </ScrollView>
+        </View>
+        {body()}
+      </KeyboardAvoidingView>
     </ScreenContainer>
   );
 }
 
 const createStyles = ({ spacing }: Theme) => ({
+  keyboardFrame: { flex: 1 },
   search: { paddingHorizontal: spacing.lg, paddingTop: spacing.xs },
   chips: {
     gap: spacing.sm,

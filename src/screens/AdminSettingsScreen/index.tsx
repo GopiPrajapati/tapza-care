@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TextInput,
+  View,
+} from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { QUERY_KEYS } from '../../commonutils/constants';
@@ -141,131 +147,137 @@ function AdminSettingsScreen() {
 
   return (
     <ScreenContainer edges={['bottom', 'left', 'right']}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        style={styles.keyboardFrame}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <AppText variant="title" accessibilityRole="header">
-          Developer settings
-        </AppText>
-
-        <SettingsSection
-          title="App config"
-          description="Switch the live theme and home layout."
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
-          <ChoiceGroup
-            options={VARIANTS}
-            selected={variant}
-            onSelect={value => setVariant(value)}
-          />
-        </SettingsSection>
+          <AppText variant="title" accessibilityRole="header">
+            Developer settings
+          </AppText>
 
-        <SettingsSection
-          title="Mock network"
-          description="Control request delay and failure behavior."
-        >
-          <AppText variant="label">Latency</AppText>
-          <ChoiceGroup
-            options={LATENCIES}
-            selected={latencyMs}
-            onSelect={value => setLatency(value)}
-          />
-          <AppText variant="label">Failure mode</AppText>
-          <ChoiceGroup
-            options={FAILURES}
-            selected={failure}
-            onSelect={value => setFailure(value)}
-          />
-        </SettingsSection>
+          <SettingsSection
+            title="App config"
+            description="Switch the live theme and home layout."
+          >
+            <ChoiceGroup
+              options={VARIANTS}
+              selected={variant}
+              onSelect={value => setVariant(value)}
+            />
+          </SettingsSection>
 
-        <SettingsSection
-          title="Local data"
-          description="Clear this device’s cached or mock data."
-        >
-          <Button
-            label="Clear cached config"
-            variant="secondary"
-            onPress={clearCache}
-          />
-          <Button
-            label="Reset dose log"
-            variant="secondary"
-            onPress={() => {
-              resetDoseLog();
-              toast.show({ message: 'Dose log reset', tone: 'success' });
-            }}
-          />
-          <Button
-            label="Reset bookings"
-            variant="secondary"
-            onPress={resetBookings}
-          />
-        </SettingsSection>
+          <SettingsSection
+            title="Mock network"
+            description="Control request delay and failure behavior."
+          >
+            <AppText variant="label">Latency</AppText>
+            <ChoiceGroup
+              options={LATENCIES}
+              selected={latencyMs}
+              onSelect={value => setLatency(value)}
+            />
+            <AppText variant="label">Failure mode</AppText>
+            <ChoiceGroup
+              options={FAILURES}
+              selected={failure}
+              onSelect={value => setFailure(value)}
+            />
+          </SettingsSection>
 
-        <SettingsSection
-          title="Live config editor"
-          description="Edit the active layout JSON, validate it, then apply it as Custom."
-        >
-          <TextInput
-            accessibilityLabel="Config JSON editor"
-            multiline
-            autoCapitalize="none"
-            autoCorrect={false}
-            spellCheck={false}
-            textAlignVertical="top"
-            value={draft}
-            onChangeText={value => {
-              setDraft(value);
-              setDirty(true);
-              setValidation(null);
-            }}
-            style={[
-              styles.editor,
-              {
-                color: colors.textPrimary,
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
-          />
-          <View style={styles.editorActions}>
-            <Button label="Validate" variant="secondary" onPress={validate} />
-            <Button label="Apply" onPress={apply} disabled={!isValidated} />
-          </View>
-          {validationResult ? (
-            <Card
-              elevated={false}
-              style={
-                validationResult.errors.length
-                  ? styles.validationError
-                  : styles.validationSuccess
-              }
-            >
-              {validationResult.errors.length ? (
-                <>
-                  <AppText variant="bodyStrong" color="danger">
-                    {validationResult.errors.length} issue
-                    {validationResult.errors.length === 1 ? '' : 's'} found
-                  </AppText>
-                  {validationResult.errors.map((error, index) => (
-                    <AppText
-                      key={`${index}-${error}`}
-                      variant="caption"
-                      color="danger"
-                    >
-                      • {error}
+          <SettingsSection
+            title="Local data"
+            description="Clear this device’s cached or mock data."
+          >
+            <Button
+              label="Clear cached config"
+              variant="secondary"
+              onPress={clearCache}
+            />
+            <Button
+              label="Reset dose log"
+              variant="secondary"
+              onPress={() => {
+                resetDoseLog();
+                toast.show({ message: 'Dose log reset', tone: 'success' });
+              }}
+            />
+            <Button
+              label="Reset bookings"
+              variant="secondary"
+              onPress={resetBookings}
+            />
+          </SettingsSection>
+
+          <SettingsSection
+            title="Live config editor"
+            description="Edit the active layout JSON, validate it, then apply it as Custom."
+          >
+            <TextInput
+              accessibilityLabel="Config JSON editor"
+              multiline
+              autoCapitalize="none"
+              autoCorrect={false}
+              spellCheck={false}
+              textAlignVertical="top"
+              value={draft}
+              onChangeText={value => {
+                setDraft(value);
+                setDirty(true);
+                setValidation(null);
+              }}
+              style={[
+                styles.editor,
+                {
+                  color: colors.textPrimary,
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+              ]}
+            />
+            <View style={styles.editorActions}>
+              <Button label="Validate" variant="secondary" onPress={validate} />
+              <Button label="Apply" onPress={apply} disabled={!isValidated} />
+            </View>
+            {validationResult ? (
+              <Card
+                elevated={false}
+                style={
+                  validationResult.errors.length
+                    ? styles.validationError
+                    : styles.validationSuccess
+                }
+              >
+                {validationResult.errors.length ? (
+                  <>
+                    <AppText variant="bodyStrong" color="danger">
+                      {validationResult.errors.length} issue
+                      {validationResult.errors.length === 1 ? '' : 's'} found
                     </AppText>
-                  ))}
-                </>
-              ) : (
-                <AppText variant="bodyStrong" color="success">
-                  Config is valid and ready to apply.
-                </AppText>
-              )}
-            </Card>
-          ) : null}
-        </SettingsSection>
-      </ScrollView>
+                    {validationResult.errors.map((error, index) => (
+                      <AppText
+                        key={`${index}-${error}`}
+                        variant="caption"
+                        color="danger"
+                      >
+                        • {error}
+                      </AppText>
+                    ))}
+                  </>
+                ) : (
+                  <AppText variant="bodyStrong" color="success">
+                    Config is valid and ready to apply.
+                  </AppText>
+                )}
+              </Card>
+            ) : null}
+          </SettingsSection>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </ScreenContainer>
   );
 }
@@ -321,7 +333,14 @@ function ChoiceGroup<T extends string | number>({
   );
 }
 
-const createStyles = ({ colors, spacing, radii, sizes }: Theme) => ({
+const createStyles = ({
+  colors,
+  spacing,
+  radii,
+  sizes,
+  typography,
+}: Theme) => ({
+  keyboardFrame: { flex: 1 },
   content: {
     padding: spacing.lg,
     gap: spacing.lg,
@@ -338,7 +357,7 @@ const createStyles = ({ colors, spacing, radii, sizes }: Theme) => ({
     borderRadius: radii.md,
     padding: spacing.md,
     fontFamily: 'Menlo',
-    fontSize: 12,
+    fontSize: typography.caption.fontSize,
   },
   editorActions: {
     flexDirection: 'row' as const,

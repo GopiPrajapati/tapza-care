@@ -29,11 +29,13 @@ header/parallax/viewport animations, theme built from config, accessibility basi
 sections, `/docs` media, APK release.
 
 ## Phase 0 — Rules, project memory, environment check
+
 **Prompt:** inspect project without installing; write CLAUDE.md (all PDF requirements + engineering rules),
 AI_LOG.md, README skeleton. Stop and report.
 **Rejected:** nothing.
 
 ## Phase 0.5 — Permanent rules in CLAUDE.md
+
 **Prompt:** docs only. Add to CLAUDE.md: mandatory folder structure (user's ChatGPT structure adapted for TS and
 the PDF), exact screen inventory, exact-version dependency rule, data-flow rule (screen → hook → repository → api
 client → mockServer), Zepto visual reference, local image assets with fallback.
@@ -52,9 +54,11 @@ typed routes passing IDs only, API-ready repositories, third-party bottom sheet.
 | Generic `CareApi` | PDF fixes endpoints and shapes; client mirrors them exactly. |
 
 ## Phase 1 — Dependencies and native setup
+
 **Prompt:** install all packages in one go, latest versions that support RN 0.88 + New Arch + React 19, pin every
 version exactly (no `^`/`~`), worklets Babel plugin, pods, Android setup, Jest mocks.
 **Decisions:**
+
 - `react-native-gesture-handler` pinned to **2.33.1** (npm `legacy` tag), not 3.4.0 (`latest`). GH 3 removed/renamed
   exports that `@gorhom/bottom-sheet@5.2.14` imports (`GestureDetector` is the new v3 detector, `SimultaneousGesture`
   and the old `PanGesture` type are gone). GH 2.33.1 supports RN 0.84+.
@@ -63,9 +67,10 @@ version exactly (no `^`/`~`), worklets Babel plugin, pods, Android setup, Jest m
 - Jest: Reanimated's own resolver (`react-native-reanimated/jest/resolver`) + `setUpTests()`; the plain
   `jest.mock('react-native-reanimated', …/mock)` crashes under Reanimated 4. lucide mapped to its CommonJS build.
 - Android `MainActivity.onCreate` sets `RNScreensFragmentFactory`, as react-native-screens documents.
-**Rejected:** `npm audit fix --force` for the toolchain vulnerability warnings (would break pinned RN tooling).
+  **Rejected:** `npm audit fix --force` for the toolchain vulnerability warnings (would break pinned RN tooling).
 
 ## Phase 2 — Folder structure and placeholder screens
+
 **Prompt:** create the CLAUDE.md folder structure, 10 placeholder screens, typed stubs for 8 shared components,
 move root to `src/App.tsx`, `AppProviders` with GestureHandlerRootView + SafeAreaProvider, remove
 `@react-native/new-app-screen`, no navigation/data/store yet.
@@ -75,10 +80,12 @@ move root to `src/App.tsx`, `AppProviders` with GestureHandlerRootView + SafeAre
 **Rejected:** nothing.
 
 ## Phase 3 — Typed navigation
+
 **Prompt:** `Routes.ts` with route constants + typed param lists (IDs only), root native stack with `MainTabs` as
 the explicit initial route, `BookingSuccess` as a modal without swipe-back, tabs generated from a config-shaped
 array with screen and icon maps, temporary route-test buttons, Android back handled.
 **Decisions:**
+
 - `resolveTabs()` (in `TabNavigator.tsx`) skips unknown and duplicate tab screens and falls back to
   `DEFAULT_TABS` when nothing usable is left, so a bad config can never leave the app without a tab bar. Tested.
 - `TabConfig` type placed in `networking/types/layoutConfig.ts`; the data-layer phase extends it into the full
@@ -91,14 +98,16 @@ array with screen and icon maps, temporary route-test buttons, Android back hand
 - Tab screen components are typed `React.ComponentType<any>` in the screen map, with a comment: the route is
   chosen at runtime from config, so TS cannot pair each component with its route props there.
 - Verified on the iOS simulator only (user's choice: limited disk/RAM; Android checked later).
-**Rejected:** nothing.
+  **Rejected:** nothing.
 
 ## Phase 4 — Data layer
+
 **Prompt:** exact PDF types, zod schemas with per-section validation and `parseConfig`, two configs (normal +
 Diwali) each with an unknown section type, doctors/prescriptions fixtures, deterministic slots, a mock server
 router with latency/failure controls and 409, an api client that can swap to fetch, repositories, image resolver,
 config validation tests.
 **Decisions:**
+
 - Two-level validation: an invalid envelope (version/theme/tabs) rejects the config; each section is then
   validated alone, so one bad or unknown section is dropped without affecting the rest. Duplicate section ids
   are dropped too (they are list keys).
@@ -116,14 +125,16 @@ config validation tests.
 - `isApiError()` checks by shape, not `instanceof`, which is unreliable for transpiled Error subclasses.
 - Added `__tests__/mockServer.test.ts` (deterministic slots, booking window, 201 then 409, failure switch,
   config variant) on top of the requested config validation tests.
-**Rejected:** a generic `CareApi` interface (the endpoints are fixed by the PDF; the client mirrors them).
+  **Rejected:** a generic `CareApi` interface (the endpoints are fixed by the PDF; the client mirrors them).
 
 ## Phase 5 — State, data hooks and theme
+
 **Prompt:** persisted Zustand stores (config variant + last good config, mock controls, dose log), TanStack Query
 hooks with an optimistic booking mutation, `useConfig` with fresh → cached → bundled fallback, `buildTheme()` with
 contrast-checked derived colours, ThemeProvider, tabs from `config.tabs`, a temporary Normal/Diwali toggle,
 a theme contrast test.
 **Decisions:**
+
 - No `useBookingStore`: bookings are server state, so TanStack Query's cache (with optimistic updates) is the
   single source of truth. A second store would need syncing and could disagree with the cache.
 - Stores sync into the mock server via `subscribe`, so the admin switches change what the "server" returns.
@@ -142,9 +153,10 @@ a theme contrast test.
   zod 4 uses `export * as ns`, which made Metro fail to bundle the app. Jest did not catch it; found by running
   the app. Exception to "no new dependency without asking", flagged to the user.
 - RN 0.88 removed `StatusBar.backgroundColor` (Android is edge-to-edge); only the bar style is themed.
-**Rejected:** a Redux/Zustand booking store (duplicates server state).
+  **Rejected:** a Redux/Zustand booking store (duplicates server state).
 
 ## Phase 6 — Shared components
+
 **Prompt:** shared UI components reading `useTheme()` only (no hard-coded colours/spacing/sizes), Zepto visual
 language but calmer for older users, accessibility labels on every touchable, SVG empty-state illustrations,
 a temporary dev-only gallery on AdminSettings.
@@ -154,6 +166,7 @@ See all), Chip, Badge, PriceText, Avatar (image → initials), Skeleton (Group/B
 EmptyState (+ Illustration), ErrorState, StaleConfigBanner, Toast (provider + `useToast`), FloatingBar,
 StickyActionBar, BottomSheet, ListRow.
 **Decisions:**
+
 - Theme gained `sizes` (touch target 44, control heights, icons, avatars) and `motion` (durations) so components
   hard-code no dimensions; plus `inverseSurface`/`onInverse` for the dark floating bar and toast.
 - `useThemedStyles(factory)` memoises a StyleSheet per theme; factories are module-level.
@@ -165,17 +178,19 @@ StickyActionBar, BottomSheet, ListRow.
   app root above the tab bar.
 - Tab icons now reuse the shared Icon map.
 - Verified on iOS in both themes: all components, sheet open + swipe-to-close, toast with Undo, theme switch.
-**Known issue (temp gallery only):** a background-coloured strip shows under StickyActionBar on the
-native-stack screen; not a double safe-area inset (fixed that, strip remains). Investigate in Phase 10 where the
-bar is used for real. Toast overlaps a StickyActionBar; add a bottom offset option then.
-**Rejected:** a gradient-sweep shimmer (heavier; opacity pulse reads as loading and is cheaper on mid-range Android).
+  **Known issue (temp gallery only):** a background-coloured strip shows under StickyActionBar on the
+  native-stack screen; not a double safe-area inset (fixed that, strip remains). Investigate in Phase 10 where the
+  bar is used for real. Toast overlaps a StickyActionBar; add a bottom offset option then.
+  **Rejected:** a gradient-sweep shimmer (heavier; opacity pulse reads as loading and is cheaper on mid-range Android).
 
 ## Phase 7 — Home sections (static, no scroll motion)
+
 **Prompt:** section registry (unknown type → null), SectionBackground (color/gradient/image with fallback), the six
 section renderers, Zepto-style header + search on a rounded top band coloured by the first section, FlatList of
 memoised sections keyed by id, a "Next dose" floating bar from prescriptions + dose log, shape-matched skeleton,
 error and stale states, both configs distinct. Tests for ServiceGrid and unknown types.
 **Decisions:**
+
 - **Band tone:** config colours are arbitrary, so `toneOn(stops)` picks text colours that reach WCAG AA on every
   gradient stop of a band; `AppText` uses it automatically inside a band. Cards, chips, search and the sticky bar
   reset to normal theme colours (`SurfaceTone`), so a white card on a dark band still reads correctly.
@@ -193,12 +208,13 @@ error and stale states, both configs distinct. Tests for ServiceGrid and unknown
   finished without stock photos.
 - Verified on the iOS simulator in both configs (Normal: teal, hero → tiles → chips → doctors → 3-col grid → offer;
   Diwali: maroon, festival greeting + diya, gradient offer strip, 2-col festive packages with badges, different order).
-**Rejected:** formatting unrelated files — a repo-wide Prettier run touched ~30 files outside this phase; those
-were restored to keep the commit focused.
-**Known gaps (later phases):** search bar opens the doctor list (no search screen yet); "See all" for services
-and the Book pill both go to the doctor list.
+  **Rejected:** formatting unrelated files — a repo-wide Prettier run touched ~30 files outside this phase; those
+  were restored to keep the commit focused.
+  **Known gaps (later phases):** search bar opens the doctor list (no search screen yet); "See all" for services
+  and the Book pill both go to the doctor list.
 
 ## Phase 8 — Home motion (Zepto feel)
+
 **Prompt:** collapsing header with pinned search and band-coloured background, hero parallax, one-time section
 entry, back-to-top pill, floating bar hide/show, cross-fade on config switch, reduce-motion support, all on the
 UI thread. The user also shared a Zepto screen recording; frames were extracted and studied.
@@ -207,6 +223,7 @@ pins under the status bar; the band colour stays behind the search bar while col
 status-bar strip turn white once pinned (that is the "safe area comes back" effect); scrolling back to the top
 reverses it.
 **Decisions:**
+
 - `StickyHomeHeader` floats over the list (absolute). Its height, background (`interpolateColor` band → surface),
   ETA fade/scale and the pin all derive from one `scrollY` shared value (`useAnimatedScrollHandler`), so no JS runs
   per frame. The top band reserves the measured header height as padding.
@@ -224,16 +241,18 @@ reverses it.
 - Reduce Motion (`useReducedMotion`) disables parallax, entry animation, content fade and scroll-to-top animation.
 - Bugs found and fixed while testing: a JS helper (`withAlpha`) called inside a worklet crashed on the UI thread
   (colours now computed on JS first); the list was gated on header measurement, which never happens in Jest.
-**Not done (honest):** Perf Monitor FPS profiling and the Android release build were not run (iOS-only testing
-for now, per the user's disk/RAM limits). `getItemLayout` not used: section heights depend on config and font
-scale, so fixed heights would be wrong.
-**Rejected:** a JS `onScroll` listener for the header (would run per frame on the JS thread).
+  **Not done (honest):** Perf Monitor FPS profiling and the Android release build were not run (iOS-only testing
+  for now, per the user's disk/RAM limits). `getItemLayout` not used: section heights depend on config and font
+  scale, so fixed heights would be wrong.
+  **Rejected:** a JS `onScroll` listener for the header (would run per frame on the JS thread).
 
 ## Phase 9 — Doctor list
+
 **Prompt:** DoctorListScreen with debounced search (name/specialty/language), specialty chips, doctor cards with
 fee and next slot, skeleton/empty/no-results/error states, opened from carousel "See all", Book quick action,
 Consult chip (pre-selected specialty) and the Home search bar (focused search).
 **Decisions:**
+
 - Search is word-prefix based: each query word must start a word in the doctor's name, specialty, languages or
   clinic. A plain substring match was tried first and "paed" matched "Orthopaedics" (caught on the simulator).
   Multi-word queries narrow ("telugu paed" → Telugu-speaking paediatricians). Tested.
@@ -245,15 +264,17 @@ Consult chip (pre-selected specialty) and the Home search bar (focused search).
 - Specialty chips come from the data; a pre-selected specialty with no doctors still shows as a chip so the user
   can clear it.
 - Debounce 250ms (`useDebouncedValue`); search field has autocorrect and autocapitalise off.
-**Verified on iOS:** opened from the search bar with focus, typed "telugu paed" → 2 doctors, added Gynaecology
-filter → "No doctors match" + Clear filters → back to 10, Book → DoctorDetails(doc-1).
-**Not verified:** the 3s latency skeleton (covered in Phase 14 once the mock controls UI exists).
+  **Verified on iOS:** opened from the search bar with focus, typed "telugu paed" → 2 doctors, added Gynaecology
+  filter → "No doctors match" + Clear filters → back to 10, Book → DoctorDetails(doc-1).
+  **Not verified:** the 3s latency skeleton (covered in Phase 14 once the mock controls UI exists).
 
 ## Phase 10 — Doctor details and appointment selection
+
 **Prompt:** Doctor summary (including optional selected service), animated 7-day date strip, gesture-driven slot
 sheet with availability/error/empty states, persisted selection while the screen remains mounted, Zepto-style
 sticky action bar, fix the sticky bar safe-area strip and toast overlap. Confirm is intentionally a no-op.
 **Decisions:**
+
 - Used the existing doctor and slot repositories/query hooks. The booking window queries all 7 dates so the
   empty-day action can jump to the next day that actually has an available slot.
 - Added an optional scrollable mode to the shared BottomSheet wrapper, using Gorhom's coordinated scroll view;
@@ -265,15 +286,17 @@ sticky action bar, fix the sticky bar safe-area strip and toast overlap. Confirm
   removes the exposed background strip. Toast now clears the tab-bar and sticky-action-bar height.
 - Unavailable slots use disabled themed Chips and cannot be pressed. The selected state is animated with
   Reanimated and respects Reduce Motion.
-**Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (8 suites, 94 tests), and
-`npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched successfully).
-**Rejected:** confirmation/navigation and booking mutation remain out of this phase; Phase 11 owns them.
+  **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (8 suites, 94 tests), and
+  `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched successfully).
+  **Rejected:** confirmation/navigation and booking mutation remain out of this phase; Phase 11 owns them.
 
 ## Phase 11 — Booking confirmation and bookings list
+
 **Prompt:** Confirm optimistically inserts a pending booking and opens BookingSuccess immediately; reconcile the
 POST response live, recover a failed/409 slot selection, prevent duplicate submissions, and implement My Bookings
 with upcoming/past, loading, empty, and retry states. Add booking-state tests; verify with 3s latency and forced 409.
 **Decisions:**
+
 - TanStack Query remains the booking source of truth. `useCreateBooking` inserts a pending item immediately,
   reconciles it to the returned confirmed booking, and removes it on failure. A 409 keeps that selected slot
   unavailable in the cache; the optimistic booking disappears.
@@ -285,15 +308,17 @@ with upcoming/past, loading, empty, and retry states. Add booking-state tests; v
   conflict/retry message. The 409 test uses the mock control's `booking409` failure and asserts the slot is taken.
 - My Bookings groups by upcoming/past and uses existing shared theme components for status, loading, empty, and
   error states. No new dependencies or backend were added.
-**Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (9 suites, 96 tests), and
-`npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (build + launch). On iPhone 17 Pro Max with
-`failure=booking409` and `latency=3000`, confirmed pending success UI followed by rollback to the same date,
-sheet reopened, unavailable slot disabled, and exact conflict toast. Mock controls were restored to defaults.
+  **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (9 suites, 96 tests), and
+  `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (build + launch). On iPhone 17 Pro Max with
+  `failure=booking409` and `latency=3000`, confirmed pending success UI followed by rollback to the same date,
+  sheet reopened, unavailable slot disabled, and exact conflict toast. Mock controls were restored to defaults.
 
 ## Phase 12 — Prescriptions list and today's adherence
+
 **Prompt:** Implement the Prescriptions tab with today's adherence summary and progress ring, prescription cards
 showing doctor, clinic, issued date, medicine count and Active/Completed status, plus loading, empty and retry states.
 **Decisions:**
+
 - The screen reads prescription data through `usePrescriptions` and the persisted dose log through
   `useDoseLogStore`; it does not import fixture data. Today's total includes only medicines whose course is active
   on the clinic-local date, and each scheduled timing counts as one dose.
@@ -301,14 +326,34 @@ showing doctor, clinic, issued date, medicine count and Active/Completed status,
   The list sorts newest issue dates first and opens the typed PrescriptionDetails route on card press.
 - The summary ring uses the already installed `react-native-svg`, and all screen styling uses theme tokens.
   No new dependencies were added. PrescriptionDetails remains for Phase 13.
-**Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (9 suites, 96 tests), and
-`npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
+  **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (9 suites, 96 tests), and
+  `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
+
+## Phase 13 — Prescription details and dose tracking
+
+**Prompt:** Show prescription metadata and Day X of N, grouped medicine schedule with suggested times, mark-taken
+controls with animation/haptic/Undo toast, persisted per-day dose state, historical-course read-only behavior,
+missing/error/loading states, and a dose-key/toggle test.
+**Decisions:**
+
+- The detail screen reads the selected prescription using `usePrescription`; dose state remains in the persisted
+  Zustand `useDoseLogStore`, keyed by clinic date, prescription, medicine, and timing. Existing Home NextDoseBar
+  and Phase 12 adherence subscribe to this same store.
+- A medicine can be marked only while its course is active today. That permits marking a later scheduled timing
+  early by patient choice, while prescriptions outside their issued date + duration are read-only.
+- Successful marks animate the check, trigger a light haptic, and show an Undo toast. Pressing a completed dose
+  again also clears it. The screen groups medicines by the existing 8 AM / 2 PM / 9 PM timing constants.
+- Added direct tests for dose-key dimensions and store toggle behavior; no dependency was added.
+  **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (10 suites, 98 tests), and
+  `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
 
 ## Phase 14 — Profile and Admin settings
+
 **Prompt:** Build the Zepto-style Profile and Developer settings screens; expose runtime config and mock network
 controls, local reset actions, a zod-backed live JSON editor, and a discreet long-press Home ETA entry point. Remove
 the temporary component gallery and phase test buttons.
 **Decisions:**
+
 - Profile uses the fictional patient fixture and mock family/clinic summaries. Only bookings and prescriptions
   tiles navigate to implemented features; other rows and Family show a Coming soon toast without fake flows.
 - Admin settings bind directly to persisted config/mock-control stores. Config selection triggers the existing
@@ -319,21 +364,33 @@ the temporary component gallery and phase test buttons.
   Dose reset uses the persisted dose-log store, and config clearing removes the last-good fallback then refetches.
 - The ETA affordance opens Admin settings on long press. README documents the hidden entry point. Removed the
   temporary ComponentGallery and the leftover TEMP route button from ServiceList.
-**Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (10 suites, 98 tests), and
-`npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
+  **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (10 suites, 98 tests), and
+  `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
 
-## Phase 13 — Prescription details and dose tracking
-**Prompt:** Show prescription metadata and Day X of N, grouped medicine schedule with suggested times, mark-taken
-controls with animation/haptic/Undo toast, persisted per-day dose state, historical-course read-only behavior,
-missing/error/loading states, and a dose-key/toggle test.
-**Decisions:**
-- The detail screen reads the selected prescription using `usePrescription`; dose state remains in the persisted
-  Zustand `useDoseLogStore`, keyed by clinic date, prescription, medicine, and timing. Existing Home NextDoseBar
-  and Phase 12 adherence subscribe to this same store.
-- A medicine can be marked only while its course is active today. That permits marking a later scheduled timing
-  early by patient choice, while prescriptions outside their issued date + duration are read-only.
-- Successful marks animate the check, trigger a light haptic, and show an Undo toast. Pressing a completed dose
-  again also clears it. The screen groups medicines by the existing 8 AM / 2 PM / 9 PM timing constants.
-- Added direct tests for dose-key dimensions and store toggle behavior; no dependency was added.
-**Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (10 suites, 98 tests), and
-`npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
+## Phase 15 — Polish and submission preparation
+
+**Prompt:** audit theme tokens, contrast, accessibility, safe areas, keyboard behavior, resilience states, dead code,
+and docs; verify TypeScript, lint, Jest, iOS and Android. The user later clarified that local storage is too limited
+for Android work and asked to defer Android until iOS changes are complete.
+**Decisions and changes:**
+
+- Audited screen/component styling for literal color values and numeric spacing/type values. No literal colors were
+  found in those directories; replaced the remaining hard-coded Admin editor font size with the caption token.
+  Zero-valued layout resets and absolute-position coordinates remain intentional.
+- Kept the existing Normal/Diwali palette and theme contrast adjustment. Added keyboard avoidance to doctor search
+  and the multiline config editor. Existing shared text and controls retain font scaling, labels, and minimum target
+  sizing; largest OS font scale and Android hardware back still need device verification.
+- Added resilience hook tests covering 3-second loading then success, config-only failure with fallback, all-fail
+  behavior, and empty list responses across doctors, slots, bookings, and prescriptions. These validate data states;
+  screen-by-screen screenshot review of skeleton/empty/error presentation remains in the checklist.
+- Removed unused `i18next` and `react-i18next` package declarations/lock entries. No other dependencies were added.
+- Updated README with setup, architecture, mock controls, folder rationale, cuts, APK instructions, screenshots table,
+  and developer-reported time spent (under 24 hours; exact count not tracked). Added the screenshot matrix and demo
+  script to `docs/CHECKLIST.md`.
+- iOS simulator build and launch completed on iPhone 17 Pro Max. Home rendered in Diwali config. Android was not
+  verified or built, per the user's storage constraint. A release build was started then interrupted before
+  completion; no APK was produced.
+
+  **Verified:** `npx tsc --noEmit` ✅, `npm run lint` ✅, `npm test` ✅ (11 suites, 102 tests), and
+  `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` ✅ (build + launch). Android release build:
+  incomplete; no APK. Largest-font-scale and interactive screen-reader checks remain manual.
