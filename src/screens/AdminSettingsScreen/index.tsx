@@ -6,7 +6,7 @@ import ScreenContainer from '../../components/ScreenContainer';
 /** Placeholder: Config switch and mock network controls go here. */
 function AdminSettingsScreen() {
   return (
-    <ScreenContainer style={styles.center}>
+    <ScreenContainer edges={['bottom', 'left', 'right']} style={styles.center}>
       <Text accessibilityRole="header">Admin settings</Text>
       <Text>Config switch and mock network controls go here.</Text>
     </ScreenContainer>

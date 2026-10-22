@@ -3,7 +3,10 @@ import { render, screen } from '@testing-library/react-native';
 
 import App from '../App';
 
-test('renders the Home placeholder', async () => {
+test('opens on the Home tab with all four tabs', async () => {
   await render(<App />);
-  expect(screen.getByText('Home')).toBeTruthy();
+  expect(screen.getByText('Config-driven home with sections goes here.')).toBeTruthy();
+  for (const label of ['Home', 'Bookings', 'Medicines', 'Profile']) {
+    expect(screen.getByRole('button', { name: label })).toBeTruthy();
+  }
 });

@@ -1,0 +1,12 @@
+[
+  { "id": "doc-1", "name": "Dr. Ramesh Reddy", "specialty": "General Physician", "photoUrl": "doctors/doc-1", "feeInr": 500, "languages": ["English", "Telugu", "Hindi"], "clinicName": "Tapza Clinic, Kondapur, Hyderabad" },
+  { "id": "doc-2", "name": "Dr. Ayesha Siddiqui", "specialty": "Gynaecology", "photoUrl": "doctors/doc-2", "feeInr": 800, "languages": ["English", "Hindi", "Urdu"], "clinicName": "Tapza Clinic, Kondapur, Hyderabad" },
+  { "id": "doc-3", "name": "Dr. Srinivas Kandula", "specialty": "Paediatrics", "photoUrl": "doctors/doc-3", "feeInr": 600, "languages": ["English", "Telugu"], "clinicName": "Tapza Clinic, Kondapur, Hyderabad" },
+  { "id": "doc-4", "name": "Dr. Priya Venkatesh", "specialty": "Dermatology", "photoUrl": "doctors/doc-4", "feeInr": 700, "languages": ["English", "Telugu", "Hindi"], "clinicName": "Tapza Clinic, Kondapur, Hyderabad" },
+  { "id": "doc-5", "name": "Dr. Mohammed Irfan", "specialty": "Cardiology", "photoUrl": "doctors/doc-5", "feeInr": 1200, "languages": ["English", "Hindi", "Urdu"], "clinicName": "Tapza Clinic, Kondapur, Hyderabad" },
+  { "id": "doc-6", "name": "Dr. Lakshmi Prasanna", "specialty": "Diabetology", "photoUrl": "doctors/doc-6", "feeInr": 650, "languages": ["English", "Telugu"], "clinicName": "Tapza Clinic, Kondapur, Hyderabad" },
+  { "id": "doc-7", "name": "Dr. Arjun Varma", "specialty": "Orthopaedics", "photoUrl": "doctors/doc-7", "feeInr": 900, "languages": ["English", "Telugu", "Hindi"], "clinicName": "Tapza Clinic, Kondapur, Hyderabad" },
+  { "id": "doc-8", "name": "Dr. Kavitha Nair", "specialty": "ENT", "photoUrl": "doctors/doc-8", "feeInr": 550, "languages": ["English", "Hindi"], "clinicName": "Tapza Clinic, Kondapur, Hyderabad" },
+  { "id": "doc-9", "name": "Dr. Vikram Chowdary", "specialty": "General Physician", "photoUrl": "doctors/doc-9", "feeInr": 300, "languages": ["English", "Telugu"], "clinicName": "Tapza Clinic, Benz Circle, Vijayawada" },
+  { "id": "doc-10", "name": "Dr. Sneha Patil", "specialty": "Paediatrics", "photoUrl": "doctors/doc-10", "feeInr": 550, "languages": ["English", "Hindi", "Telugu"], "clinicName": "Tapza Clinic, Kondapur, Hyderabad" }
+]

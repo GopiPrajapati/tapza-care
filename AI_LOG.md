@@ -73,3 +73,47 @@ move root to `src/App.tsx`, `AppProviders` with GestureHandlerRootView + SafeAre
 `Routes.ts`, `helpers.ts`, `theme.ts`, `typography.ts` are documented empty modules filled in later phases.
 `MIN_TAP_TARGET = 44` lives in `commonutils/dimensions.ts` and is used by Button and Input.
 **Rejected:** nothing.
+
+## Phase 3 — Typed navigation
+**Prompt:** `Routes.ts` with route constants + typed param lists (IDs only), root native stack with `MainTabs` as
+the explicit initial route, `BookingSuccess` as a modal without swipe-back, tabs generated from a config-shaped
+array with screen and icon maps, temporary route-test buttons, Android back handled.
+**Decisions:**
+- `resolveTabs()` (in `TabNavigator.tsx`) skips unknown and duplicate tab screens and falls back to
+  `DEFAULT_TABS` when nothing usable is left, so a bad config can never leave the app without a tab bar. Tested.
+- `TabConfig` type placed in `networking/types/layoutConfig.ts`; the data-layer phase extends it into the full
+  `LayoutConfig`.
+- `BookingSuccess` uses `fullScreenModal` + `gestureEnabled: false`; its buttons use `popTo(MainTabs, …)` so the
+  booking screens are cleared. Android hardware back on that screen also goes Home (BackHandler), instead of
+  returning to the booking screen.
+- Stack back button is chevron-only (`headerBackButtonDisplayMode: 'minimal'`): the default showed "MainTabs".
+- `useAppNavigation` lives in `src/hooks/` (hooks folder rule) rather than `Routes.ts`.
+- Tab screen components are typed `React.ComponentType<any>` in the screen map, with a comment: the route is
+  chosen at runtime from config, so TS cannot pair each component with its route props there.
+- Verified on the iOS simulator only (user's choice: limited disk/RAM; Android checked later).
+**Rejected:** nothing.
+
+## Phase 4 — Data layer
+**Prompt:** exact PDF types, zod schemas with per-section validation and `parseConfig`, two configs (normal +
+Diwali) each with an unknown section type, doctors/prescriptions fixtures, deterministic slots, a mock server
+router with latency/failure controls and 409, an api client that can swap to fetch, repositories, image resolver,
+config validation tests.
+**Decisions:**
+- Two-level validation: an invalid envelope (version/theme/tabs) rejects the config; each section is then
+  validated alone, so one bad or unknown section is dropped without affecting the rest. Duplicate section ids
+  are dropped too (they are list keys).
+- Theme and background colours must be hex; gradients are comma-separated hex. The theme builder can rely on it.
+- Unknown `action.type` values become `"none"` (zod `.catch`) instead of invalidating the item, so a newer config
+  never breaks an older app.
+- Section types are inferred from the zod schemas (`z.infer`) so types and validation cannot drift apart.
+- Additions to the PDF shapes, all marked in code: `Doctor.clinicName`, `service_grid.columns` (2|3, default 2),
+  `GET /bookings` (Bookings tab list). `GET /doctors/:id` and `/prescriptions/:id` are not in the contract, so
+  repositories filter the list.
+- Clinic time is IST (+05:30) everywhere, independent of the device time zone. Prescription `issuedAt` is stored as
+  `issuedDaysAgo` in the fixture so the data never goes stale.
+- Slots: seeded by an FNV-1a hash of doctor/date/time: 15/20/30-minute slots by doctor, about 25% taken, past
+  slots unavailable, some doctors off on Sundays (exercises the empty-day state), today + 6 days only.
+- `isApiError()` checks by shape, not `instanceof`, which is unreliable for transpiled Error subclasses.
+- Added `__tests__/mockServer.test.ts` (deterministic slots, booking window, 201 then 409, failure switch,
+  config variant) on top of the requested config validation tests.
+**Rejected:** a generic `CareApi` interface (the endpoints are fixed by the PDF; the client mirrors them).

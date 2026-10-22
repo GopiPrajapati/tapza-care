@@ -1,0 +1,45 @@
+[
+  {
+    "id": "rx-1",
+    "issuedDaysAgo": 2,
+    "doctorName": "Dr. Ramesh Reddy",
+    "clinicName": "Tapza Clinic, Kondapur, Hyderabad",
+    "medicines": [
+      { "id": "rx-1-m1", "name": "Paracetamol 650 mg", "dose": "1 tablet", "days": 5, "timing": ["morning", "night"] },
+      { "id": "rx-1-m2", "name": "Cetirizine 10 mg", "dose": "1 tablet", "days": 5, "timing": ["night"] },
+      { "id": "rx-1-m3", "name": "Pantoprazole 40 mg", "dose": "1 tablet", "days": 5, "timing": ["morning"] }
+    ]
+  },
+  {
+    "id": "rx-2",
+    "issuedDaysAgo": 10,
+    "doctorName": "Dr. Lakshmi Prasanna",
+    "clinicName": "Tapza Clinic, Kondapur, Hyderabad",
+    "medicines": [
+      { "id": "rx-2-m1", "name": "Metformin 500 mg", "dose": "1 tablet", "days": 30, "timing": ["morning", "night"] },
+      { "id": "rx-2-m2", "name": "Glimepiride 1 mg", "dose": "1 tablet", "days": 30, "timing": ["morning"] },
+      { "id": "rx-2-m3", "name": "Atorvastatin 10 mg", "dose": "1 tablet", "days": 30, "timing": ["night"] }
+    ]
+  },
+  {
+    "id": "rx-3",
+    "issuedDaysAgo": 5,
+    "doctorName": "Dr. Mohammed Irfan",
+    "clinicName": "Tapza Clinic, Kondapur, Hyderabad",
+    "medicines": [
+      { "id": "rx-3-m1", "name": "Amlodipine 5 mg", "dose": "1 tablet", "days": 30, "timing": ["morning"] },
+      { "id": "rx-3-m2", "name": "Aspirin 75 mg", "dose": "1 tablet", "days": 30, "timing": ["afternoon"] },
+      { "id": "rx-3-m3", "name": "Calcium + Vitamin D3", "dose": "1 tablet", "days": 15, "timing": ["afternoon"] }
+    ]
+  },
+  {
+    "id": "rx-4",
+    "issuedDaysAgo": 40,
+    "doctorName": "Dr. Srinivas Kandula",
+    "clinicName": "Tapza Clinic, Kondapur, Hyderabad",
+    "medicines": [
+      { "id": "rx-4-m1", "name": "Amoxicillin syrup 125 mg/5 ml", "dose": "5 ml", "days": 5, "timing": ["morning", "afternoon", "night"] },
+      { "id": "rx-4-m2", "name": "Paracetamol syrup 120 mg/5 ml", "dose": "5 ml", "days": 3, "timing": ["morning", "night"] }
+    ]
+  }
+]

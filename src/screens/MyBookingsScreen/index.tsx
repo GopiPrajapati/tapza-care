@@ -6,7 +6,7 @@ import ScreenContainer from '../../components/ScreenContainer';
 /** Placeholder: Upcoming and past bookings go here. */
 function MyBookingsScreen() {
   return (
-    <ScreenContainer style={styles.center}>
+    <ScreenContainer edges={['top', 'left', 'right']} style={styles.center}>
       <Text accessibilityRole="header">My bookings</Text>
       <Text>Upcoming and past bookings go here.</Text>
     </ScreenContainer>
