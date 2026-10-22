@@ -303,3 +303,19 @@ showing doctor, clinic, issued date, medicine count and Active/Completed status,
   No new dependencies were added. PrescriptionDetails remains for Phase 13.
 **Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (9 suites, 96 tests), and
 `npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
+
+## Phase 13 — Prescription details and dose tracking
+**Prompt:** Show prescription metadata and Day X of N, grouped medicine schedule with suggested times, mark-taken
+controls with animation/haptic/Undo toast, persisted per-day dose state, historical-course read-only behavior,
+missing/error/loading states, and a dose-key/toggle test.
+**Decisions:**
+- The detail screen reads the selected prescription using `usePrescription`; dose state remains in the persisted
+  Zustand `useDoseLogStore`, keyed by clinic date, prescription, medicine, and timing. Existing Home NextDoseBar
+  and Phase 12 adherence subscribe to this same store.
+- A medicine can be marked only while its course is active today. That permits marking a later scheduled timing
+  early by patient choice, while prescriptions outside their issued date + duration are read-only.
+- Successful marks animate the check, trigger a light haptic, and show an Undo toast. Pressing a completed dose
+  again also clears it. The screen groups medicines by the existing 8 AM / 2 PM / 9 PM timing constants.
+- Added direct tests for dose-key dimensions and store toggle behavior; no dependency was added.
+**Verified:** `npx tsc --noEmit`, `npm run lint`, `npm test -- --runInBand` (10 suites, 98 tests), and
+`npm run ios -- --simulator "iPhone 17 Pro Max" --no-packager` (built and launched on iPhone 17 Pro Max).
