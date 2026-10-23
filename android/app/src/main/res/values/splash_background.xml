@@ -1,0 +1,4 @@
+<resources>
+    <!-- Neutral: the native splash is shown before the saved config is known. -->
+    <color name="splash_background">#FFFFFF</color>
+</resources>

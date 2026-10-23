@@ -60,3 +60,12 @@ export const DOSE_TIMES = {
   afternoon: 14 * 60,
   night: 21 * 60,
 } as const;
+
+/**
+ * Neutral launch colours shared by the native launch screens (iOS storyboard, Android launch window) and the
+ * pre-hydration React screen. They cannot come from config: they appear before the saved config is loaded.
+ */
+export const LAUNCH_COLORS = {
+  background: '#FFFFFF',
+  text: '#0F172A',
+} as const;

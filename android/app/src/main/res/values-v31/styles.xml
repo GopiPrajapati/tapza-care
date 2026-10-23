@@ -1,0 +1,8 @@
+<resources>
+    <!-- Android 12+ system splash. No windowSplashScreenAnimatedIcon on purpose: the system then shows the icon
+         of the launcher alias that was tapped, so Normal shows the brand icon and Diwali the festive icon. -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+        <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+    </style>
+</resources>

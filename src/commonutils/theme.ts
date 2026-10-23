@@ -149,6 +149,7 @@ export const sizes = {
   avatarLg: 72,
   illustration: 160,
   heroArt: 112,
+  splashBadge: 128,
   carouselCard: 236,
   hairline: StyleSheet.hairlineWidth,
   border: 1,

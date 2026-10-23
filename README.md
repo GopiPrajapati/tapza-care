@@ -69,10 +69,26 @@ src/
     types/         Domain types and Zod config validation
     mockData/      Fixtures, slot generation, and in-process mock server
   screens/         Feature screens; each owns its screen-specific UI
-  store/           Persisted config, mock controls, language, and dose log
+  store/           Persisted config, mock controls, language, appearance, and dose log
 __tests__/         Jest tests for domain logic, data behavior, and key interactions
 docs/              Phase prompts, progress handoff, and submission checklist
 ```
+
+## App icon assets
+
+The square teal, cream, and amber Tapza Care medical mark is sourced from `assets/branding/tapza-care-app-icon.svg`.
+Regenerate native PNG sizes with `python3 scripts/generate-app-icons.py`. Selecting the Diwali config switches to
+a festive Diwali launcher icon; Normal and Custom use the original brand icon. iOS uses an alternate app icon and
+may show Apple's system confirmation alert. Android switches between launcher activity aliases; some launchers
+refresh the displayed icon after a short delay. iOS icon sets live in
+`ios/TapzaCare/Images.xcassets/AppIcon.appiconset` and `AppIconDiwali.appiconset`; Android icons use density-specific
+resources. Android's transparent white small notification glyph remains `@drawable/ic_notification`.
+**Splash:** native launch screens cannot know the saved config (they appear before JavaScript and are baked into
+the installed app), so the iOS storyboard and Android pre-12 launch window are neutral: white with the "Tapza Care"
+name. On Android 12+ the system splash shows the icon of the launcher alias that was tapped, so it already follows
+Normal/Diwali. As soon as saved settings load, an animated React Native splash (`src/container/BrandSplash.tsx`)
+shows the round mark for the active variant (brand mark for Normal/Custom, festive mark for Diwali), soft halo
+rings in the theme colour, the tagline and, during a festival, its greeting, then cross-fades into Home.
 
 ## Architecture
 

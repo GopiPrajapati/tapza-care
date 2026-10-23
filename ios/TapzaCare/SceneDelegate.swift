@@ -19,6 +19,8 @@ class SceneDelegate: RCTDefaultReactNativeFactoryDelegate, UIWindowSceneDelegate
     dependencyProvider = RCTAppDependencyProvider()
     reactNativeFactory = RCTReactNativeFactory(delegate: self)
     window = UIWindow(windowScene: windowScene)
+    // Match the neutral launch screen so there is no dark flash before React Native draws (LAUNCH_COLORS in JS).
+    window?.backgroundColor = .white
     
     #if DEBUG
     let devMenuConfiguration = RCTDevMenuConfiguration(
@@ -44,6 +46,11 @@ class SceneDelegate: RCTDefaultReactNativeFactoryDelegate, UIWindowSceneDelegate
 
   func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     RCTLinkingManager.scene(scene, continue: userActivity)
+  }
+
+  override func customize(_ rootView: RCTRootView) {
+    super.customize(rootView)
+    rootView.backgroundColor = .white
   }
 
   override func bundleURL() -> URL? {

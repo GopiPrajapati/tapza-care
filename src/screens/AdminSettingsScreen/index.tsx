@@ -156,10 +156,7 @@ function AdminSettingsScreen() {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
-          <AppText variant="title" accessibilityRole="header">
-            {t('adminTitle')}
-          </AppText>
-
+          {/* The native stack header already shows the screen title. */}
           <SettingsSection
             title={t('appConfig')}
             description={t('appConfigDescription')}
