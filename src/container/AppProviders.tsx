@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { StatusBar, StyleSheet, View, useColorScheme } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -9,6 +9,10 @@ import { ToastProvider } from '../components/Toast';
 import { useConfig } from '../hooks/useConfig';
 import { useStoresHydrated } from '../store/hydration';
 import { useAppearanceStore } from '../store/appearanceStore';
+import { useConfigStore } from '../store/configStore';
+import { syncAppIcon } from '../commonutils/appIcon';
+import BrandSplash from './BrandSplash';
+import StartupSplash from './StartupSplash';
 import { createQueryClient } from './queryClient';
 
 export interface AppProvidersProps {
@@ -20,6 +24,7 @@ function ConfigThemeProvider({ children }: AppProvidersProps) {
   const { config } = useConfig();
   const colorScheme = useColorScheme();
   const preference = useAppearanceStore(state => state.preference);
+  const variant = useConfigStore(state => state.variant);
   const useDark =
     preference === 'dark' ||
     (preference === 'system' && colorScheme === 'dark');
@@ -28,11 +33,20 @@ function ConfigThemeProvider({ children }: AppProvidersProps) {
     [config.theme, useDark],
   );
 
+  useEffect(() => {
+    syncAppIcon(variant);
+  }, [variant]);
+
+  // The branded splash plays once per launch, over the app that is already loading underneath.
+  const [splashDone, setSplashDone] = useState(false);
+  const hideSplash = useCallback(() => setSplashDone(true), []);
+
   return (
     <ThemeProvider theme={theme}>
       {/* Android draws edge-to-edge, so only the icon style is set. */}
       <StatusBar barStyle={theme.statusBarStyle} animated />
       <ToastProvider>{children}</ToastProvider>
+      {splashDone ? null : <BrandSplash onDone={hideSplash} />}
     </ThemeProvider>
   );
 }
@@ -53,7 +67,7 @@ function AppProviders({ children }: AppProvidersProps) {
           {hydrated ? (
             <ConfigThemeProvider>{children}</ConfigThemeProvider>
           ) : (
-            <View style={styles.root} />
+            <StartupSplash />
           )}
         </QueryClientProvider>
       </SafeAreaProvider>

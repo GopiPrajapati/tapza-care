@@ -1,5 +1,7 @@
 /** All fixed UI copy lives here so languages stay in sync across screens. */
 const en = {
+  splashTagline: 'Your clinic, close to home',
+  splashLabel: 'Tapza Care is starting',
   home: 'Home',
   bookAppointment: 'Book appointment',
   prescriptionSingular: 'Prescription',
@@ -280,6 +282,8 @@ const en = {
 };
 
 const hi: Record<keyof typeof en, string> = {
+  splashTagline: 'आपका क्लिनिक, घर के पास',
+  splashLabel: 'Tapza Care शुरू हो रहा है',
   home: 'होम',
   bookings: 'बुकिंग',
   medicines: 'दवाइयाँ',
@@ -556,6 +560,8 @@ const hi: Record<keyof typeof en, string> = {
 
 const te: Record<keyof typeof en, string> = {
   ...en,
+  splashTagline: 'మీ క్లినిక్, ఇంటికి దగ్గరగా',
+  splashLabel: 'Tapza Care ప్రారంభమవుతోంది',
   home: 'హోమ్',
   bookings: 'బుకింగ్‌లు',
   medicines: 'మందులు',

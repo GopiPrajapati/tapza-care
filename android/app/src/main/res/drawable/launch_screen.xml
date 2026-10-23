@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pre-Android 12 launch window: plain neutral background. The config-aware branded splash is drawn by
+     React Native (BrandSplash) as soon as the saved config variant is loaded. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/splash_background" />
+</layer-list>

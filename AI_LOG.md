@@ -435,3 +435,81 @@ language switch, and persist the selected language.
 
   **Verified:** `npx tsc --noEmit` ✅, `npm run lint` ✅, and
   `npm run ios -- --simulator "iPhone 17 Pro Max"` ✅ (simulator build and launch). Jest was not run.
+
+## App icon and display name
+
+**Prompt:** Create a Tapza Care app icon using the existing theme, set the native app name, and include a separate
+transparent Android notification icon.
+**Decisions and changes:**
+
+- Created a teal, cream, and amber medical cross / pulse mark with reusable SVG source and a standard-library Python
+  renderer for native image sizes.
+- Populated the iOS AppIcon asset catalog for iPhone, iPad, and App Store sizes. Added Android legacy density and
+  adaptive launcher assets.
+- Added a white-only transparent Android notification glyph and registered it as the Firebase default small icon.
+  The app still has no notification library or notification feature installed.
+- Changed the visible app name to “Tapza Care” on Android and iOS, including the iOS launch screen label. Native
+  module and bundle identifiers remain unchanged.
+
+  **Verified:** `python3 scripts/generate-app-icons.py` ✅; iOS asset catalog filenames and pixel dimensions ✅;
+  Android XML resources parsed ✅; `ios/TapzaCare/Info.plist` lint ✅; Python generator syntax ✅. A generic iOS
+  device build was attempted but exited 65 during ReactCodegen. The simulator build could not be completed because
+  CoreSimulatorService became unavailable; a subsequent attempt also encountered a locked DerivedData build
+  database while builds overlapped. The overlapping build was interrupted and exited 75. No successful native build
+  or simulator launch verified the icon assets. Android Gradle build was not run due the user's storage constraint.
+  Do not claim local notifications are implemented or that a successful native build consumed these assets.
+
+## Config-driven Diwali launcher icon
+
+**Prompt:** Use a festive launcher icon when the Diwali config is selected and the original Tapza Care icon otherwise.
+**Decisions and changes:**
+
+- Added a Diwali variant of the app mark using the app's Diwali palette, with a small diya flame detail. The icon
+  generator now creates both variants for iOS and Android density sizes.
+- On iOS, registered `AppIconDiwali` as an alternate asset catalog icon and added a small native bridge using
+  `UIApplication.setAlternateIconName`. iOS displays its system alert when an app requests an alternate icon.
+- On Android, added Normal and Diwali launcher activity aliases and a native module that enables the selected alias.
+  The separate transparent notification glyph is unchanged.
+- The persisted config variant drives launcher icon synchronization at app runtime. Normal and Custom select the
+  original brand icon; Diwali selects the festive variant.
+- Updated README icon documentation. No new dependency was added.
+
+  **Verified:** `python3 scripts/generate-app-icons.py` ✅. Native build, simulator, and device verification were
+  not run in this phase because the previous iOS build had a DerivedData database lock and the user previously
+  deferred Android builds due storage constraints.
+
+## Native splash screen branding
+
+**Prompt:** Show the Tapza Care app icon on the native splash screen, using the static Diwali icon and matching background.
+**Decisions and changes:**
+
+- Replaced the splash artwork with the static red Diwali icon on a warm cream background in the iOS launch
+  storyboard, Android launch window, Android 12+ system splash, and React Native hydration screen.
+- Enlarged the splash artwork and styled the app name to match the Diwali palette; removed the React Native
+  development label.
+- The launcher icon still follows the selected config independently; splash artwork is deliberately static.
+
+  **Verified:** `npx tsc --noEmit` ✅; storyboard and Android XML parse; launch icon assets exist; Xcode project file
+  parses. iOS and Android builds were not run.
+
+## Review pass — splash, icons and checks (Claude)
+**Prompt:** audit the app against the PDF; the splash should follow Normal/Diwali like the launcher icon and look
+better than a square icon.
+**Findings and fixes:**
+- iOS launch screen showed black with no artwork. Two bugs: the storyboard background colour had no `alpha`
+  (defaults to transparent → black), and the image view's width/height constraints were declared on the parent
+  without a second item, so the image drew at zero size. Verified with a recorded cold launch.
+- A native launch screen cannot follow the saved config (it is shown before JavaScript and baked into the app).
+  Decision: native splash is neutral (white + "Tapza Care"); Android 12+ drops the forced icon so the system
+  shows the active launcher alias icon (Normal or Diwali); a new animated `BrandSplash` reads the saved variant
+  and theme and shows a round mark with halo rings, tagline and festival greeting, then cross-fades into Home.
+  Copy added in English, Hindi and Telugu.
+- Removed a black flash between the native splash and React Native: the window and root view now use the same
+  white as the launch screen (`SceneDelegate.swift`, `LAUNCH_COLORS`).
+- Icon switching: iOS and Android modules now skip the change when the requested icon is already active (iOS
+  otherwise shows its "icon changed" alert on every launch).
+- Developer settings showed its title twice (native header + in-screen heading); removed the in-screen one.
+- Lint error (unused import) fixed.
+**Verified:** `tsc` ✅, `eslint` ✅, `jest --runInBand` 102/102 ✅; iOS simulator debug build ✅; recorded cold
+launches show white native splash → Diwali splash (red mark, festival pill) and → Normal splash (green mark),
+both cross-fading into Home. Android not built (deferred by the user to the next session).
